@@ -31,7 +31,6 @@ const Navbar = () => {
 
   const rightNavLinks = [
     { name: 'Comrade', href: '/comrade', icon: FiUsers, special: true },
-    { name: 'About', href: '/about', icon: FiUser, special: false },
     { name: 'Contact', href: '/contact', icon: FiPhone, special: false },
   ]
 
@@ -40,7 +39,7 @@ const Navbar = () => {
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled
           ? 'bg-[#f9f5f0]/95 backdrop-blur-lg shadow-2xl border-b border-[#32620e]/10'
-          : 'bg-[#f9f5f0] shadow-lg'
+          : 'bg-[#f9f5f0] shadow-lg border-b-2 border-[#32620e]'
       }`}
     >
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
