@@ -73,7 +73,7 @@ export default function Welcome() {
             { label: 'Rentals', href: '/rental', icon: '🏠' },
             { label: 'Commercial', href: '/commercial', icon: '🏢' },
             { label: 'Land', href: '/land', icon: '🌾' },
-            { label: 'Comrade', href: '/comrade', icon: '👥' },
+            { label: 'Comrade', href: '/comrade', icon: '🔑' },
           ].map((item, index) => (
             <Link
               key={item.label}
