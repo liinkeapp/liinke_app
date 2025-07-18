@@ -138,7 +138,7 @@ export default function Map({ properties }: { properties: Listings[] }) {
             console.warn('⚠️ Geolocation error:', error)
             fitBoundsToProperties(map)
           },
-          { enableHighAccuracy: true, timeout: 10000 },
+          { enableHighAccuracy: true },
         )
       } else {
         fitBoundsToProperties(map)

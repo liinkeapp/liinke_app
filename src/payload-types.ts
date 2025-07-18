@@ -173,6 +173,8 @@ export interface Property {
   slug: string;
   type: number | Category;
   price: number;
+  bedrooms: number;
+  bathrooms: number;
   status?: ('available' | 'occupied' | 'under construction') | null;
   location: {
     lat: number;
@@ -316,6 +318,8 @@ export interface PropertiesSelect<T extends boolean = true> {
   slug?: T;
   type?: T;
   price?: T;
+  bedrooms?: T;
+  bathrooms?: T;
   status?: T;
   location?:
     | T

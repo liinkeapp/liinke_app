@@ -54,6 +54,16 @@ const Properties: CollectionConfig = {
       required: true,
     },
     {
+      name: 'bedrooms',
+      type: 'number',
+      required: true,
+    },
+    {
+      name: 'bathrooms',
+      type: 'number',
+      required: true,
+    },
+    {
       name: 'status',
       type: 'select',
       options: ['available', 'occupied', 'under construction'],

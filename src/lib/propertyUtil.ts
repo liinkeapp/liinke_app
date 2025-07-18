@@ -21,7 +21,8 @@ export async function fetchAllPosts(page = 1, limit = 18) {
         typeof post.type === 'object' && post.type !== null && 'name' in post.type
           ? { name: post.type.name }
           : { name: String(post.type) },
-
+      bedrooms: post.bedrooms,
+      bathrooms: post.bathrooms,
       publishedAt: new Date(post.createdAt).toLocaleDateString('en-US', {
         month: 'long',
         day: 'numeric',
@@ -108,6 +109,8 @@ export async function fetchByType(slug: string, page = 1, limit = 18) {
         day: 'numeric',
         year: 'numeric',
       }),
+      bedrooms: post.bedrooms,
+      bathrooms: post.bathrooms,
       description: post.description,
       location: {
         lat: post.location?.lat,
@@ -137,6 +140,8 @@ export async function searchPosts(query: string, page = 1, limit = 0) {
         { title: { like: query } },
         { description: { like: query } },
         { 'type.name': { like: query } },
+        { bedrooms: { like: query } },
+        { bathrooms: { like: query } },
       ],
     },
     depth: 2,
