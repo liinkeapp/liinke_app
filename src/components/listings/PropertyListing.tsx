@@ -138,7 +138,7 @@ export default function PropertyListingClient({
     <div className="container mx-auto px-4 py-8">
       {/* Search and Filter Bar */}
       <div className="bg-white rounded-2xl shadow-lg border border-[#32620e]/10 p-6 mb-8">
-        <div className="flex flex-col lg:flex-row gap-4 items-center">
+        <div className="flex flex-row lg:flex-row gap-4 items-center">
           {/* Search Input */}
           <div className="flex-1 relative">
             <svg
@@ -167,12 +167,11 @@ export default function PropertyListingClient({
           <div className="flex bg-[#32620e]/10 rounded-lg p-1">
             {[
               { key: 'grid', icon: '⊞', label: 'Grid' },
-              { key: 'list', icon: '☰', label: 'List' },
               { key: 'map', icon: '🗺', label: 'Map' },
             ].map(({ key, icon, label }) => (
               <button
                 key={key}
-                onClick={() => setView(key as 'grid' | 'list' | 'map')}
+                onClick={() => setView(key as 'grid' | 'map')}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                   view === key
                     ? 'bg-[#32620e] text-white shadow-sm'
@@ -323,7 +322,7 @@ export default function PropertyListingClient({
           <div
             className={`grid gap-6 mb-8 ${
               view === 'grid'
-                ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+                ? 'grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
                 : 'grid-cols-1'
             }`}
           >
@@ -336,23 +335,22 @@ export default function PropertyListingClient({
                 onClick={() => setSelectedProperty(property.id)}
               >
                 {/* Property Image */}
-                <div
-                  className={`relative overflow-hidden ${
-                    view === 'list' ? 'w-80 flex-shrink-0' : 'h-48'
-                  }`}
-                >
+                <div className="relative overflow-hidden h-48">
                   <Image
-                    width={200}
-                    height={180}
+                    width={500}
+                    height={480}
                     src={property.images?.[0]?.url || '/placeholder-property.jpg'}
                     alt={property.title}
+                    loading="lazy"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   <div className="absolute top-4 left-4 bg-[#32620e] text-white px-3 py-1 rounded-full text-sm font-medium">
                     {property.type?.name || 'Property'}
                   </div>
                   <div className="absolute top-4 right-4 bg-[#c1440e] text-white px-3 py-1 rounded-full text-sm font-bold">
-                    {property.price}
+                    {property && typeof property.price === 'number'
+                      ? property.price.toFixed(2)
+                      : 'N/A'}
                   </div>
                 </div>
 
