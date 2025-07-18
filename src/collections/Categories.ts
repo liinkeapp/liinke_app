@@ -7,7 +7,11 @@ export const Categories: CollectionConfig = {
     useAsTitle: 'name',
     defaultColumns: ['name', 'slug', 'parent'],
   },
-
+  access: {
+    read: () => true,
+    create: () => true,
+    delete: () => true,
+  },
   fields: [
     {
       name: 'name',

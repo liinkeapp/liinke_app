@@ -2,11 +2,21 @@ export interface Listings {
   id: number
   slug: string
   title: string
-  content: string
+  type: { name: string }
   publishedAt: string
-  images?: []
-  category: number | { name: string } | { slug: string }
-  subcategory?: string | null
-  tags?: { tag: string; id?: string | null | undefined }[] | null | undefined
-  breakingNews?: boolean
+  price: number
+  description?: string
+  bedrooms: number
+  bathrooms: number
+  location?: {
+    lat: number
+    lng: number
+    address?: string | null
+  }
+  images?: any[]
+  features?: { feature: string }[]
+}
+
+export interface MapProps {
+  markers?: { lat: number; lng: number; id?: string }[]
 }

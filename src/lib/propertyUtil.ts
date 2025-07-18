@@ -37,39 +37,38 @@ export async function fetchAllPosts(page = 1, limit = 18) {
   }
 }
 
-export async function fetchRelatedPosts(currentCategory: { name: string }, currentSlug: string) {
+export async function fetchRelatedPosts(currentType: { name: string }, currentSlug: string) {
   const payloadConfig = await config
   const payload = await getPayload({ config: payloadConfig })
 
-  const { docs: allBlogs } = await payload.find({
+  const { docs: relatedProps } = await payload.find({
     collection: 'properties',
     depth: 3,
     limit: 4,
     where: {
       and: [
         {
-          'category.name': {
-            equals: currentCategory.name,
+          'type.name': {
+            equals: currentType.name,
           },
         },
         {
           slug: {
-            not_equals: currentSlug, // Exclude the current article
+            not_equals: currentSlug,
           },
         },
       ],
     },
   })
 
-  return allBlogs
+  return relatedProps
 }
 
-export async function fetchByCategory(slug: string, page = 1, limit = 18) {
+export async function fetchByType(slug: string, page = 1, limit = 18) {
   const payloadConfig = await config
   const payload = await getPayload({ config: payloadConfig })
 
-  // First, resolve the category ID from the slug
-  const catRes = await payload.find({
+  const typeRes = await payload.find({
     collection: 'categories',
     where: {
       slug: {
@@ -78,8 +77,8 @@ export async function fetchByCategory(slug: string, page = 1, limit = 18) {
     },
   })
 
-  const category = catRes.docs?.[0]
-  if (!category) {
+  const type = typeRes.docs?.[0]
+  if (!type) {
     return { posts: [], pagination: { page: 1, totalPages: 1 } }
   }
 
@@ -89,27 +88,34 @@ export async function fetchByCategory(slug: string, page = 1, limit = 18) {
     limit,
     page,
     where: {
-      category: {
-        equals: category.id,
+      type: {
+        equals: type.id,
       },
     },
   })
 
   return {
     posts: res.docs.map((post) => ({
-      id: post.id,
+      id: post.id, // ✅ FIXED: number → string
       slug: post.slug,
       title: post.title,
       type:
         typeof post.type === 'object' && post.type !== null && 'name' in post.type
           ? { name: post.type.name }
           : { name: String(post.type) },
-
       publishedAt: new Date(post.createdAt).toLocaleDateString('en-US', {
         month: 'long',
         day: 'numeric',
         year: 'numeric',
       }),
+      description: post.description,
+      location: {
+        lat: post.location?.lat,
+        lng: post.location?.lng,
+        address: post.location?.address,
+      },
+      images: post.images || [],
+      features: post.features || [],
     })),
     pagination: {
       hasNextPage: res.hasNextPage,
@@ -129,8 +135,8 @@ export async function searchPosts(query: string, page = 1, limit = 0) {
     where: {
       or: [
         { title: { like: query } },
-        { excerpt: { like: query } },
-        { 'category.name': { like: query } },
+        { description: { like: query } },
+        { 'type.name': { like: query } },
       ],
     },
     depth: 2,
