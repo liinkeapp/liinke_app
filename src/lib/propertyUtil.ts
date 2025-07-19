@@ -21,8 +21,16 @@ export async function fetchAllPosts(page = 1, limit = 18) {
         typeof post.type === 'object' && post.type !== null && 'name' in post.type
           ? { name: post.type.name }
           : { name: String(post.type) },
+      price: post.price,
       bedrooms: post.bedrooms,
       bathrooms: post.bathrooms,
+      location: {
+        lat: post.location?.lat,
+        lng: post.location?.lng,
+        address: post.location?.address,
+      },
+      images: post.images || [],
+      features: post.features || [],
       publishedAt: new Date(post.createdAt).toLocaleDateString('en-US', {
         month: 'long',
         day: 'numeric',
@@ -109,6 +117,7 @@ export async function fetchByType(slug: string, page = 1, limit = 18) {
         day: 'numeric',
         year: 'numeric',
       }),
+      price: post.price,
       bedrooms: post.bedrooms,
       bathrooms: post.bathrooms,
       description: post.description,

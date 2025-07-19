@@ -3,12 +3,13 @@
 import React from 'react'
 import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api'
 import { Listings } from '@/types/property'
+import { useRouter } from 'next/navigation'
 
 const accessToken = process.env.NEXT_PUBLIC_GOOGLE_TOKEN!
 
 const containerStyle = {
   width: '100%',
-  height: '100%',
+  height: '100vh',
   minHeight: '400px',
   borderRadius: '12px',
   overflow: 'hidden',
@@ -88,6 +89,7 @@ const mapStyles = [
 ]
 
 export default function Map({ properties }: { properties: Listings[] }) {
+  const router = useRouter()
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: accessToken,
@@ -249,17 +251,10 @@ export default function Map({ properties }: { properties: Listings[] }) {
         </div>
       )}
 
-      {/* User location indicator */}
-      {userPosition && (
-        <div className="absolute bottom-4 left-4 z-10 bg-[#c1440e] text-[#f9f5f0] px-3 py-1 rounded-full text-sm font-medium shadow-lg">
-          📍 Your Location
-        </div>
-      )}
-
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={fallbackCenter}
-        zoom={10}
+        zoom={8}
         onLoad={onLoad}
         onUnmount={onUnmount}
         options={{
@@ -269,49 +264,48 @@ export default function Map({ properties }: { properties: Listings[] }) {
           gestureHandling: 'greedy',
           scrollwheel: true,
           zoomControl: true,
+          cameraControl: false,
           zoomControlOptions: {
             position: google.maps.ControlPosition.RIGHT_CENTER,
           },
           styles: mapStyles,
         }}
       >
-        {/* User position marker */}
-        {userPosition && (
-          <Marker
-            position={userPosition}
-            icon={{
-              url: createUserLocationIcon(),
-              scaledSize: new google.maps.Size(24, 24),
-              anchor: new google.maps.Point(12, 12),
-            }}
-            title="Your Location"
-          />
-        )}
+        {validProperties.map((property) => {
+          const propertyPath = `/${
+            typeof property.type === 'object' && property.type !== null && 'slug' in property.type
+              ? property.type.slug
+              : typeof property.type === 'string' || typeof property.type === 'number'
+                ? property.type
+                : 'rental'
+          }/${property.slug}`
 
-        {/* Property markers */}
-        {validProperties.map((property) => (
-          <Marker
-            key={property.id}
-            position={{
-              lat: property.location!.lat,
-              lng: property.location!.lng,
-            }}
-            icon={{
-              url: markerIcons[property.id] || '/prop.jpg',
-              scaledSize: new google.maps.Size(
-                selectedProperty === property.id ? 70 : 60,
-                selectedProperty === property.id ? 70 : 60,
-              ),
-              anchor: new google.maps.Point(
-                selectedProperty === property.id ? 35 : 30,
-                selectedProperty === property.id ? 35 : 30,
-              ),
-            }}
-            title={property.title}
-            onClick={() => handleMarkerClick(property.id)}
-            animation={selectedProperty === property.id ? google.maps.Animation.BOUNCE : undefined}
-          />
-        ))}
+          return (
+            <Marker
+              key={property.id}
+              position={{
+                lat: property.location!.lat,
+                lng: property.location!.lng,
+              }}
+              icon={{
+                url: markerIcons[property.id] || '/prop.jpg',
+                scaledSize: new google.maps.Size(
+                  selectedProperty === property.id ? 70 : 60,
+                  selectedProperty === property.id ? 70 : 60,
+                ),
+                anchor: new google.maps.Point(
+                  selectedProperty === property.id ? 35 : 30,
+                  selectedProperty === property.id ? 35 : 30,
+                ),
+              }}
+              title={property.title}
+              animation={
+                selectedProperty === property.id ? google.maps.Animation.BOUNCE : undefined
+              }
+              onClick={() => router.push(propertyPath)}
+            />
+          )
+        })}
       </GoogleMap>
     </div>
   )
@@ -377,34 +371,4 @@ async function createCircularMarker(
     img.onerror = () => resolve('/prop.jpg')
     img.src = imageUrl
   })
-}
-
-function createUserLocationIcon(): string {
-  const canvas = document.createElement('canvas')
-  const size = 24
-  canvas.width = size
-  canvas.height = size
-
-  const ctx = canvas.getContext('2d')
-  if (!ctx) return ''
-
-  // Draw pulsing circle
-  ctx.beginPath()
-  ctx.arc(size / 2, size / 2, size / 2 - 2, 0, Math.PI * 2)
-  ctx.fillStyle = '#c1440e'
-  ctx.fill()
-
-  // Draw inner circle
-  ctx.beginPath()
-  ctx.arc(size / 2, size / 2, size / 2 - 6, 0, Math.PI * 2)
-  ctx.fillStyle = '#f9f5f0'
-  ctx.fill()
-
-  // Draw center dot
-  ctx.beginPath()
-  ctx.arc(size / 2, size / 2, 3, 0, Math.PI * 2)
-  ctx.fillStyle = '#c1440e'
-  ctx.fill()
-
-  return canvas.toDataURL()
 }

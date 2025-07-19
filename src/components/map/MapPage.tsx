@@ -1,15 +1,12 @@
 'use client'
 
 import React, { useState, useEffect, useMemo } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import Map from '@/components/map/Map'
 import { Listings } from '@/types/property'
-import Image from 'next/image'
-import Link from 'next/link'
 
 interface PropertyListingClientProps {
   initialProperties: Listings[]
-  categoryName: string
   searchParams?: {
     page?: string
     search?: string
@@ -23,20 +20,9 @@ interface PropertyListingClientProps {
   }
 }
 
-const ITEMS_PER_PAGE = 12
-
-export default function PropertyListingClient({
-  initialProperties,
-  categoryName,
-  searchParams,
-}: PropertyListingClientProps) {
+export default function MapPage({ initialProperties, searchParams }: PropertyListingClientProps) {
   const router = useRouter()
-  const urlSearchParams = useSearchParams()
 
-  // State management
-  const [view, setView] = useState<'grid' | 'list' | 'map'>(
-    (searchParams?.view as 'grid' | 'list' | 'map') || 'grid',
-  )
   const [searchTerm, setSearchTerm] = useState(searchParams?.search || '')
   const [priceRange, setPriceRange] = useState({
     min: searchParams?.priceMin || '',
@@ -48,7 +34,6 @@ export default function PropertyListingClient({
   const [sortBy, setSortBy] = useState(searchParams?.sortBy || 'newest')
   const [currentPage, setCurrentPage] = useState(Number(searchParams?.page) || 1)
   const [showFilters, setShowFilters] = useState(false)
-  const [selectedProperty, setSelectedProperty] = useState<number | null>(null)
 
   // Filter and sort properties
   const filteredAndSortedProperties = useMemo(() => {
@@ -87,19 +72,6 @@ export default function PropertyListingClient({
     return filtered
   }, [initialProperties, searchTerm, priceRange, bedrooms, bathrooms, propertyType, sortBy])
 
-  // Pagination
-  const totalPages = Math.ceil(filteredAndSortedProperties.length / ITEMS_PER_PAGE)
-  const paginatedProperties = filteredAndSortedProperties.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE,
-  )
-
-  // Get unique property types for filter
-  const propertyTypes = useMemo(() => {
-    const types = initialProperties.map((p) => p.type?.name).filter(Boolean)
-    return [...new Set(types)]
-  }, [initialProperties])
-
   // Update URL when filters change
   useEffect(() => {
     const params = new URLSearchParams()
@@ -110,20 +82,11 @@ export default function PropertyListingClient({
     if (bathrooms) params.set('bathrooms', bathrooms)
     if (propertyType) params.set('propertyType', propertyType)
     if (sortBy !== 'newest') params.set('sortBy', sortBy)
-    if (view !== 'grid') params.set('view', view)
     if (currentPage !== 1) params.set('page', currentPage.toString())
 
     const newUrl = `${window.location.pathname}?${params.toString()}`
     router.replace(newUrl, { scroll: false })
-  }, [searchTerm, priceRange, bedrooms, bathrooms, propertyType, sortBy, view, currentPage, router])
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-KE', {
-      style: 'currency',
-      currency: 'KES',
-      minimumFractionDigits: 0,
-    }).format(price)
-  }
+  }, [searchTerm, priceRange, bedrooms, bathrooms, propertyType, sortBy, currentPage, router])
 
   const clearFilters = () => {
     setSearchTerm('')
@@ -162,28 +125,6 @@ export default function PropertyListingClient({
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-3 border border-[#32620e]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#32620e] focus:border-transparent"
             />
-          </div>
-
-          {/* View Toggle */}
-          <div className="flex bg-[#32620e]/10 rounded-lg p-1">
-            {[
-              { key: 'grid', icon: '⊞', label: 'Grid' },
-              { key: 'map', icon: '🗺', label: 'Map' },
-            ].map(({ key, icon, label }) => (
-              <button
-                key={key}
-                onClick={() => setView(key as 'grid' | 'map')}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                  view === key
-                    ? 'bg-[#32620e] text-white shadow-sm'
-                    : 'text-[#32620e] hover:bg-[#32620e]/10'
-                }`}
-                title={label}
-              >
-                <span className="mr-2">{icon}</span>
-                <span className="hidden sm:inline">{label}</span>
-              </button>
-            ))}
           </div>
 
           {/* Filter Toggle */}
@@ -261,25 +202,6 @@ export default function PropertyListingClient({
                 </select>
               </div>
 
-              {/* Property Type */}
-              <div>
-                <label className="block text-sm font-medium text-[#32620e] mb-2">
-                  Property Type
-                </label>
-                <select
-                  value={propertyType}
-                  onChange={(e) => setPropertyType(e.target.value)}
-                  className="w-full px-3 py-2 border border-[#32620e]/20 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#32620e]"
-                >
-                  <option value="">All Types</option>
-                  {propertyTypes.map((type) => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
               {/* Sort By */}
               <div>
                 <label className="block text-sm font-medium text-[#32620e] mb-2">Sort By</label>
@@ -312,129 +234,20 @@ export default function PropertyListingClient({
         )}
       </div>
 
-      {/* Results Section */}
-      {view === 'map' ? (
-        <div className="h-[600px] rounded-2xl overflow-hidden">
-          <Map properties={filteredAndSortedProperties} />
-        </div>
-      ) : (
-        <>
-          {/* Properties Grid/List */}
-          <div
-            className={`grid gap-6 mb-8 ${
-              view === 'grid'
-                ? 'grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-                : 'grid-cols-1'
-            }`}
-          >
-            {paginatedProperties.map((property) => (
-              <div
-                key={property.id}
-                className={`group bg-white rounded-2xl shadow-lg border border-[#32620e]/10 overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer ${
-                  view === 'list' ? 'flex' : ''
-                }`}
-                onClick={() => setSelectedProperty(property.id)}
-              >
-                {/* Property Image */}
-                <div className="relative overflow-hidden h-48">
-                  <Image
-                    width={500}
-                    height={480}
-                    src={property.images?.[0]?.url || '/placeholder-property.jpg'}
-                    alt={property.title}
-                    loading="lazy"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute top-4 left-4 bg-[#32620e] text-white px-3 py-1 rounded-full text-sm font-medium">
-                    {property.type?.name || 'Property'}
-                  </div>
-                  <div className="absolute top-4 right-4 bg-[#c1440e] text-white px-3 py-1 rounded-full text-sm font-bold">
-                    {property && typeof property.price === 'number'
-                      ? property.price.toFixed(2)
-                      : 'N/A'}
-                  </div>
-                </div>
-
-                {/* Property Details */}
-                <div className="p-6 flex-1">
-                  <h3 className="text-lg font-semibold text-[#32620e] mb-2 group-hover:text-[#c1440e] transition-colors">
-                    {property.title}
-                  </h3>
-                  <p className="text-[#32620e]/70 text-sm mb-4">
-                    📍 {property.location?.address || 'Location not specified'}
-                  </p>
-
-                  <div className="flex items-center gap-4 text-sm text-[#32620e]/80 mb-4">
-                    <span className="flex items-center gap-1">
-                      🛏️ {property.bedrooms} bed{property.bedrooms !== 1 ? 's' : ''}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      🚿 {property.bathrooms} bath{property.bathrooms !== 1 ? 's' : ''}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-[#32620e]/50">
-                      Listed {new Date(property.publishedAt || '').toLocaleDateString()}
-                    </span>
-                    <button className="bg-[#32620e] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#32620e]/90 transition-colors">
-                      <Link
-                        href={`/${
-                          typeof property.type === 'object' &&
-                          property.type !== null &&
-                          'slug' in property.type
-                            ? property.type.slug
-                            : typeof property.type === 'string' || typeof property.type === 'number'
-                              ? property.type
-                              : 'rental'
-                        }/${property.slug}`}
-                        className="block"
-                      >
-                        View Details
-                      </Link>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
+      <div className="relative mb-2">
+        <div className="absolute -inset-1 bg-gradient-to-r from-[#32620e] via-[#c1440e] to-[#32620e] rounded-3xl blur-sm opacity-75"></div>
+        <div className="relative bg-slate-900 rounded-3xl overflow-hidden border border-slate-700/50">
+          <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
+            <div className="w-3 h-3 bg-[#32620e] rounded-full animate-pulse"></div>
+            <div className="w-3 h-3 bg-[#c1440e] rounded-full animate-pulse delay-150"></div>
+            <div className="w-3 h-3 bg-slate-500 rounded-full animate-pulse delay-300"></div>
+            <span className="text-xs text-slate-400 ml-2 font-mono">LIINKE</span>
           </div>
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-2">
-              <button
-                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-                disabled={currentPage === 1}
-                className="px-4 py-2 rounded-lg border border-[#32620e]/20 text-[#32620e] hover:bg-[#32620e]/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                Previous
-              </button>
-
-              {[...Array(totalPages)].map((_, i) => (
-                <button
-                  key={i + 1}
-                  onClick={() => setCurrentPage(i + 1)}
-                  className={`px-4 py-2 rounded-lg transition-colors ${
-                    currentPage === i + 1
-                      ? 'bg-[#32620e] text-white'
-                      : 'border border-[#32620e]/20 text-[#32620e] hover:bg-[#32620e]/10'
-                  }`}
-                >
-                  {i + 1}
-                </button>
-              ))}
-
-              <button
-                onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
-                disabled={currentPage === totalPages}
-                className="px-4 py-2 rounded-lg border border-[#32620e]/20 text-[#32620e] hover:bg-[#32620e]/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                Next
-              </button>
-            </div>
-          )}
-        </>
-      )}
+          <div>
+            <Map properties={filteredAndSortedProperties} />
+          </div>
+        </div>
+      </div>
 
       {/* No Results */}
       {filteredAndSortedProperties.length === 0 && (
