@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
 import React from 'react'
@@ -175,10 +177,6 @@ export default function Map({ properties }: { properties: Listings[] }) {
     setMap(null)
   }, [])
 
-  const handleMarkerClick = (propertyId: number) => {
-    setSelectedProperty(propertyId === selectedProperty ? null : propertyId)
-  }
-
   if (loadError) {
     return (
       <div className="w-full h-96 bg-gradient-to-br from-[#f9f5f0] to-[#32620e]/10 rounded-xl border-2 border-[#32620e]/20 flex items-center justify-center">
@@ -233,7 +231,7 @@ export default function Map({ properties }: { properties: Listings[] }) {
   }
 
   return (
-    <div className="w-full h-96 lg:h-[500px] xl:h-[600px] relative rounded-xl overflow-hidden shadow-2xl border-2 border-[#32620e]/20">
+    <div className="w-full h-96 lg:h-[500px] xl:h-[600px] relative rounded-xl overflow-hidden border-2 border-[#32620e]/50">
       {/* Loading overlay for markers */}
       {isLoadingMarkers && (
         <div className="absolute top-4 left-4 z-10 bg-[#f9f5f0]/95 backdrop-blur-sm rounded-lg px-4 py-2 border border-[#32620e]/20">
@@ -272,13 +270,7 @@ export default function Map({ properties }: { properties: Listings[] }) {
         }}
       >
         {validProperties.map((property) => {
-          const propertyPath = `/${
-            typeof property.type === 'object' && property.type !== null && 'slug' in property.type
-              ? property.type.slug
-              : typeof property.type === 'string' || typeof property.type === 'number'
-                ? property.type
-                : 'rental'
-          }/${property.slug}`
+          const propertyPath = `/${property.category}/${property.slug}`
 
           return (
             <Marker

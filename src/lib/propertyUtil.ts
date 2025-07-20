@@ -17,10 +17,7 @@ export async function fetchAllPosts(page = 1, limit = 18) {
       id: post.id,
       slug: post.slug,
       title: post.title,
-      type:
-        typeof post.type === 'object' && post.type !== null && 'name' in post.type
-          ? { name: post.type.name }
-          : { name: String(post.type) },
+      type: post.category,
       price: post.price,
       bedrooms: post.bedrooms,
       bathrooms: post.bathrooms,
@@ -46,7 +43,7 @@ export async function fetchAllPosts(page = 1, limit = 18) {
   }
 }
 
-export async function fetchRelatedPosts(currentType: { name: string }, currentSlug: string) {
+export async function fetchRelatedPosts(category: string, currentSlug: string) {
   const payloadConfig = await config
   const payload = await getPayload({ config: payloadConfig })
 
@@ -57,8 +54,8 @@ export async function fetchRelatedPosts(currentType: { name: string }, currentSl
     where: {
       and: [
         {
-          'type.name': {
-            equals: currentType.name,
+          category: {
+            equals: category,
           },
         },
         {
@@ -73,23 +70,9 @@ export async function fetchRelatedPosts(currentType: { name: string }, currentSl
   return relatedProps
 }
 
-export async function fetchByType(slug: string, page = 1, limit = 18) {
+export async function fetchByType(category: string, page = 1, limit = 18) {
   const payloadConfig = await config
   const payload = await getPayload({ config: payloadConfig })
-
-  const typeRes = await payload.find({
-    collection: 'categories',
-    where: {
-      slug: {
-        equals: slug,
-      },
-    },
-  })
-
-  const type = typeRes.docs?.[0]
-  if (!type) {
-    return { posts: [], pagination: { page: 1, totalPages: 1 } }
-  }
 
   const res = await payload.find({
     collection: 'properties',
@@ -97,8 +80,8 @@ export async function fetchByType(slug: string, page = 1, limit = 18) {
     limit,
     page,
     where: {
-      type: {
-        equals: type.id,
+      category: {
+        equals: category,
       },
     },
   })
@@ -108,10 +91,7 @@ export async function fetchByType(slug: string, page = 1, limit = 18) {
       id: post.id, // ✅ FIXED: number → string
       slug: post.slug,
       title: post.title,
-      type:
-        typeof post.type === 'object' && post.type !== null && 'name' in post.type
-          ? { name: post.type.name }
-          : { name: String(post.type) },
+      type: post.category,
       publishedAt: new Date(post.createdAt).toLocaleDateString('en-US', {
         month: 'long',
         day: 'numeric',
@@ -148,7 +128,7 @@ export async function searchPosts(query: string, page = 1, limit = 0) {
       or: [
         { title: { like: query } },
         { description: { like: query } },
-        { 'type.name': { like: query } },
+        { category: { like: query } },
         { bedrooms: { like: query } },
         { bathrooms: { like: query } },
       ],

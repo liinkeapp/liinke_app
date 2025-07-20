@@ -2,7 +2,7 @@ export interface Listings {
   id: number
   slug: string
   title: string
-  type: { name: string }
+  category: string
   publishedAt: string
   price: number
   description?: string
@@ -15,6 +15,7 @@ export interface Listings {
   }
   images?: any[]
   features?: { feature: string }[]
+  status?: 'available' | 'sold' | 'rented'
 }
 
 export interface MapProps {

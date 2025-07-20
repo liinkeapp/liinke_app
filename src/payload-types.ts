@@ -70,7 +70,6 @@ export interface Config {
     users: User;
     media: Media;
     properties: Property;
-    categories: Category;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -80,7 +79,6 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     properties: PropertiesSelect<false> | PropertiesSelect<true>;
-    categories: CategoriesSelect<false> | CategoriesSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -168,13 +166,14 @@ export interface Property {
   id: number;
   title: string;
   /**
-   * The slug is automatically generated from the title if left empty.
+   * Automatically generated from title if left empty.
    */
   slug: string;
-  type: number | Category;
+  category: 'land' | 'houses' | 'rentals' | 'commercial' | 'comrade';
+  transactionType: 'buy' | 'rent' | 'lease';
   price: number;
-  bedrooms: number;
-  bathrooms: number;
+  bedrooms?: number | null;
+  bathrooms?: number | null;
   status?: ('available' | 'occupied' | 'under construction') | null;
   location: {
     lat: number;
@@ -190,17 +189,6 @@ export interface Property {
       }[]
     | null;
   publishedAt?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "categories".
- */
-export interface Category {
-  id: number;
-  name: string;
-  slug: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -222,10 +210,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'properties';
         value: number | Property;
-      } | null)
-    | ({
-        relationTo: 'categories';
-        value: number | Category;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -316,7 +300,8 @@ export interface MediaSelect<T extends boolean = true> {
 export interface PropertiesSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
-  type?: T;
+  category?: T;
+  transactionType?: T;
   price?: T;
   bedrooms?: T;
   bathrooms?: T;
@@ -337,16 +322,6 @@ export interface PropertiesSelect<T extends boolean = true> {
         id?: T;
       };
   publishedAt?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "categories_select".
- */
-export interface CategoriesSelect<T extends boolean = true> {
-  name?: T;
-  slug?: T;
   updatedAt?: T;
   createdAt?: T;
 }

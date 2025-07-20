@@ -9,7 +9,7 @@ export default function Welcome() {
   useEffect(() => {
     setIsLoaded(true)
 
-    const handleMouseMove = (e) => {
+    const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY })
     }
 
@@ -265,7 +265,7 @@ export default function Welcome() {
             <span>BY</span>
             <div className="flex items-center gap-1">
               <div className="w-1 h-1 bg-[#32620e]/60 animate-pulse"></div>
-              <span className="text-[#32620e]/70 font-semibold">MENIME PROPERTIES</span>
+              <span className="text-[#32620e]/70 font-semibold">MENIM GROUP</span>
               <div className="w-1 h-1 bg-[#c1440e]/60 animate-pulse"></div>
             </div>
             <span>EST 2025</span>

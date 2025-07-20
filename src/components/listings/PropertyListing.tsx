@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
 import React, { useState, useEffect, useMemo } from 'react'
@@ -27,7 +28,7 @@ const ITEMS_PER_PAGE = 12
 
 export default function PropertyListingClient({
   initialProperties,
-  categoryName,
+
   searchParams,
 }: PropertyListingClientProps) {
   const router = useRouter()
@@ -64,7 +65,7 @@ export default function PropertyListingClient({
 
       const matchesBedrooms = !bedrooms || property.bedrooms >= Number(bedrooms)
       const matchesBathrooms = !bathrooms || property.bathrooms >= Number(bathrooms)
-      const matchesType = !propertyType || property.type?.name === propertyType
+      const matchesType = !propertyType || property.category === propertyType
 
       return matchesSearch && matchesPrice && matchesBedrooms && matchesBathrooms && matchesType
     })
@@ -96,7 +97,7 @@ export default function PropertyListingClient({
 
   // Get unique property types for filter
   const propertyTypes = useMemo(() => {
-    const types = initialProperties.map((p) => p.type?.name).filter(Boolean)
+    const types = initialProperties.map((p) => p.category).filter(Boolean)
     return [...new Set(types)]
   }, [initialProperties])
 
@@ -116,14 +117,6 @@ export default function PropertyListingClient({
     const newUrl = `${window.location.pathname}?${params.toString()}`
     router.replace(newUrl, { scroll: false })
   }, [searchTerm, priceRange, bedrooms, bathrooms, propertyType, sortBy, view, currentPage, router])
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-KE', {
-      style: 'currency',
-      currency: 'KES',
-      minimumFractionDigits: 0,
-    }).format(price)
-  }
 
   const clearFilters = () => {
     setSearchTerm('')
@@ -314,7 +307,7 @@ export default function PropertyListingClient({
 
       {/* Results Section */}
       {view === 'map' ? (
-        <div className="h-[600px] rounded-2xl overflow-hidden">
+        <div className="md:h-[600px] rounded-2xl overflow-hidden">
           <Map properties={filteredAndSortedProperties} />
         </div>
       ) : (
@@ -346,7 +339,7 @@ export default function PropertyListingClient({
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   <div className="absolute top-4 left-4 bg-[#32620e] text-white px-3 py-1 rounded-full text-sm font-medium">
-                    {property.type?.name || 'Property'}
+                    {property.category || 'Property'}
                   </div>
                   <div className="absolute top-4 right-4 bg-[#c1440e] text-white px-3 py-1 rounded-full text-sm font-bold">
                     {property && typeof property.price === 'number'
@@ -358,7 +351,14 @@ export default function PropertyListingClient({
                 {/* Property Details */}
                 <div className="p-6 flex-1">
                   <h3 className="text-lg font-semibold text-[#32620e] mb-2 group-hover:text-[#c1440e] transition-colors">
-                    {property.title}
+                    <Link
+                      href={`/${
+                        property.category ? property.category : 'properties'
+                      }/${property.slug}`}
+                      className="block"
+                    >
+                      {property.title}
+                    </Link>
                   </h3>
                   <p className="text-[#32620e]/70 text-sm mb-4">
                     📍 {property.location?.address || 'Location not specified'}
@@ -380,13 +380,7 @@ export default function PropertyListingClient({
                     <button className="bg-[#32620e] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#32620e]/90 transition-colors">
                       <Link
                         href={`/${
-                          typeof property.type === 'object' &&
-                          property.type !== null &&
-                          'slug' in property.type
-                            ? property.type.slug
-                            : typeof property.type === 'string' || typeof property.type === 'number'
-                              ? property.type
-                              : 'rental'
+                          property.category ? property.category : 'properties'
                         }/${property.slug}`}
                         className="block"
                       >

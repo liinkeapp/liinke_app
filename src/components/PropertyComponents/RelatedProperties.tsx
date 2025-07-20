@@ -2,9 +2,10 @@
 import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { Listings } from '@/types/property'
 
 interface RelatedPropertiesProps {
-  relatedPosts: any[]
+  relatedPosts: Listings[]
   categorySlug: string
   formatPrice: (price: number) => string
 }
@@ -60,11 +61,7 @@ export function RelatedProperties({
                 {/* Property Type Badge */}
                 <div className="absolute top-3 left-3">
                   <span className="bg-[#32620e]/90 backdrop-blur-sm text-white px-2 py-1 rounded-lg text-xs font-medium">
-                    {typeof relatedPost.type === 'object' &&
-                    relatedPost.type !== null &&
-                    'name' in relatedPost.type
-                      ? relatedPost.type.name
-                      : 'Property'}
+                    {typeof relatedPost.category ? relatedPost.category : 'Property'}
                   </span>
                 </div>
 

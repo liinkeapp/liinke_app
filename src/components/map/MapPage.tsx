@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import Map from '@/components/map/Map'
 import { Listings } from '@/types/property'
+import { IoMdSearch } from 'react-icons/io'
 
 interface PropertyListingClientProps {
   initialProperties: Listings[]
@@ -49,7 +50,7 @@ export default function MapPage({ initialProperties, searchParams }: PropertyLis
 
       const matchesBedrooms = !bedrooms || property.bedrooms >= Number(bedrooms)
       const matchesBathrooms = !bathrooms || property.bathrooms >= Number(bathrooms)
-      const matchesType = !propertyType || property.type?.name === propertyType
+      const matchesType = !propertyType || property.category === propertyType
 
       return matchesSearch && matchesPrice && matchesBedrooms && matchesBathrooms && matchesType
     })
@@ -101,29 +102,17 @@ export default function MapPage({ initialProperties, searchParams }: PropertyLis
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Search and Filter Bar */}
-      <div className="bg-white rounded-2xl shadow-lg border border-[#32620e]/10 p-6 mb-8">
+      <div className="bg-white rounded-2xl border-2 border-[#32620e]/70 p-2 mb-4">
         <div className="flex flex-row lg:flex-row gap-4 items-center">
           {/* Search Input */}
           <div className="flex-1 relative">
-            <svg
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#32620e]/50 w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
+            <IoMdSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#32620e]/50 w-5 h-5" />
             <input
               type="text"
               placeholder="Search properties, locations..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-[#32620e]/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#32620e] focus:border-transparent"
+              className="w-full pl-10 pr-4 py-3 border border-[#32620e]/20 rounded-lg focus:outline-none"
             />
           </div>
 
@@ -235,18 +224,7 @@ export default function MapPage({ initialProperties, searchParams }: PropertyLis
       </div>
 
       <div className="relative mb-2">
-        <div className="absolute -inset-1 bg-gradient-to-r from-[#32620e] via-[#c1440e] to-[#32620e] rounded-3xl blur-sm opacity-75"></div>
-        <div className="relative bg-slate-900 rounded-3xl overflow-hidden border border-slate-700/50">
-          <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
-            <div className="w-3 h-3 bg-[#32620e] rounded-full animate-pulse"></div>
-            <div className="w-3 h-3 bg-[#c1440e] rounded-full animate-pulse delay-150"></div>
-            <div className="w-3 h-3 bg-slate-500 rounded-full animate-pulse delay-300"></div>
-            <span className="text-xs text-slate-400 ml-2 font-mono">LIINKE</span>
-          </div>
-          <div>
-            <Map properties={filteredAndSortedProperties} />
-          </div>
-        </div>
+        <Map properties={filteredAndSortedProperties} />
       </div>
 
       {/* No Results */}

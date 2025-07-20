@@ -19,18 +19,19 @@ type PageProps = {
   }
 }
 
-export default async function Page({ params, searchParams }: PageProps) {
-  const currentPage = Number(searchParams?.page) || 1
-  const categorySlug = params.categorySlug
-
-  // Pass the slug to fetchByCategory
+export default async function Page({ searchParams }: PageProps) {
   const { posts } = await fetchAllPosts()
-  console.log('CHECKING LISTINGS', posts)
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const postsWithCategory = posts.map((post: any) => ({
+    ...post,
+    category: post.category ?? post.type ?? 'unknown',
+  }))
 
   return (
     <div className="bg-[#f9f5f0] pt-20">
       {/* Main Content */}
-      <MapPage initialProperties={posts} searchParams={searchParams} />
+      <MapPage initialProperties={postsWithCategory} searchParams={searchParams} />
     </div>
   )
 }

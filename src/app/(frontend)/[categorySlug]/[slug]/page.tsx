@@ -1,11 +1,10 @@
-// Main Property Page Component
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export const dynamic = 'force-dynamic'
 
 import React from 'react'
 import config from '@/payload.config'
 import { getPayload } from 'payload'
 import { notFound } from 'next/navigation'
-import { formatDistanceToNow } from 'date-fns'
 import { fetchAllPosts, fetchRelatedPosts } from '@/lib/propertyUtil'
 
 // Import all the components
@@ -37,42 +36,18 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
     notFound()
   }
 
-  // Format the published date
-  const publishedDate = new Date(post.createdAt)
-  const publishedDateFormatted = publishedDate.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
-
-  // Get how long ago the post was published
-  const timeAgo = formatDistanceToNow(publishedDate, { addSuffix: true })
-
   // Fetch related posts
-  const data = await fetchRelatedPosts(
-    {
-      name:
-        typeof post.type === 'object' && post.type !== null && 'name' in post.type
-          ? post.type.name
-          : String(post.type),
-    },
-    slug,
-  )
-
-  const relatedPosts = data.slice(0, 3)
-
-  // Fetch latest posts for sidebar
-  const latestPostsData = await fetchAllPosts(1, 5)
-  const latestPosts = latestPostsData.posts.filter((p) => p.slug !== slug)
+  const data = await fetchRelatedPosts(post.category, slug)
+  const relatedPosts = data.slice(0, 3).map((post: any) => ({
+    ...post,
+    publishedAt:
+      typeof post.publishedAt === 'string' && post.publishedAt
+        ? post.publishedAt
+        : (post.publishedAt ?? '') || '',
+  }))
 
   // Current URL for sharing
-  const categorySlug =
-    typeof post.type === 'object' && post.type !== null && 'slug' in post.type
-      ? post.type.slug
-      : typeof post.type === 'string' || typeof post.type === 'number'
-        ? post.type
-        : 'news'
-  const currentUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/${categorySlug}/${slug}`
+  const categorySlug = post.category
 
   // Format price function
   const formatPrice = (price: number) => {
@@ -99,10 +74,30 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
             <PropertyDescription description={post.description} />
 
             {/* Features & Amenities */}
-            <PropertyFeatures features={post.features} />
+            <PropertyFeatures
+              features={
+                Array.isArray(post.features)
+                  ? post.features
+                      .filter(
+                        (f): f is { id?: string; feature: string } =>
+                          !!f && typeof f.feature === 'string',
+                      )
+                      .map((f) => ({ id: f.id ?? undefined, feature: f.feature! }))
+                  : []
+              }
+            />
 
             {/* Image Gallery */}
-            <ImageGallery images={post.images} title={post.title} />
+            <ImageGallery
+              images={
+                Array.isArray(post.images)
+                  ? post.images
+                      .filter((img) => !!img && typeof (img as any).url === 'string')
+                      .map((img) => ({ url: (img as any).url }))
+                  : []
+              }
+              title={post.title}
+            />
 
             {/* Related Properties */}
             <RelatedProperties

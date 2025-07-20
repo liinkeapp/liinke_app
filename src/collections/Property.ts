@@ -5,7 +5,7 @@ const Properties: CollectionConfig = {
   slug: 'properties',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'type', 'price', 'status'],
+    defaultColumns: ['title', 'category', 'transactionType', 'price', 'status'],
   },
   hooks: {
     beforeChange: [
@@ -30,7 +30,7 @@ const Properties: CollectionConfig = {
       unique: true,
       admin: {
         position: 'sidebar',
-        description: 'The slug is automatically generated from the title if left empty.',
+        description: 'Automatically generated from title if left empty.',
       },
       hooks: {
         beforeValidate: [
@@ -42,33 +42,52 @@ const Properties: CollectionConfig = {
         ],
       },
     },
+
     {
-      name: 'type',
-      type: 'relationship',
-      relationTo: 'categories',
+      name: 'category',
+      type: 'select',
+      options: ['land', 'houses', 'rentals', 'commercial', 'comrade'],
       required: true,
     },
+
+    {
+      name: 'transactionType',
+      type: 'select',
+      required: true,
+      options: ['buy', 'rent', 'lease'],
+    },
+
     {
       name: 'price',
       type: 'number',
       required: true,
     },
+
     {
       name: 'bedrooms',
       type: 'number',
-      required: true,
+      required: false,
+      admin: {
+        condition: (_, siblingData) => !['land', 'commercial'].includes(siblingData?.category),
+      },
     },
+
     {
       name: 'bathrooms',
       type: 'number',
-      required: true,
+      required: false,
+      admin: {
+        condition: (_, siblingData) => !['land', 'commercial'].includes(siblingData?.category),
+      },
     },
+
     {
       name: 'status',
       type: 'select',
       options: ['available', 'occupied', 'under construction'],
       defaultValue: 'available',
     },
+
     {
       name: 'location',
       type: 'group',
@@ -89,6 +108,7 @@ const Properties: CollectionConfig = {
         },
       ],
     },
+
     {
       name: 'images',
       type: 'upload',
@@ -96,14 +116,17 @@ const Properties: CollectionConfig = {
       required: false,
       hasMany: true,
     },
+
     {
       name: 'description',
       type: 'textarea',
       required: true,
     },
+
     {
       name: 'features',
       type: 'array',
+      label: 'Property Features',
       fields: [
         {
           name: 'feature',
@@ -111,12 +134,7 @@ const Properties: CollectionConfig = {
         },
       ],
     },
-    // {
-    //   name: 'agent',
-    //   type: 'relationship',
-    //   relationTo: 'agents',
-    //   required: false,
-    // },
+
     {
       name: 'publishedAt',
       type: 'date',

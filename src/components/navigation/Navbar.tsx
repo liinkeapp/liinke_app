@@ -23,7 +23,7 @@ const Navbar = () => {
   }, [])
 
   const leftNavLinks = [
-    { name: 'Rentals', href: '/rental', icon: FaBuilding, special: false },
+    { name: 'Rentals', href: '/rentals', icon: FaBuilding, special: false },
     { name: 'Land', href: '/land', icon: FiLayers, special: false },
     { name: 'Commercial', href: '/commercial', icon: FaBuilding, special: false },
     { name: 'Map', href: '/map', icon: FiMapPin, special: false },
