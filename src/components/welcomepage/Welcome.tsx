@@ -19,32 +19,39 @@ export default function Welcome() {
 
   const categories = [
     {
+      label: 'Comrade',
+      href: '/comrade',
+      icon: '🛌🏼',
+      description: 'Affordable housing for students & workers',
+      code: 'CRD-004',
+    },
+    {
       label: 'Rentals',
       href: '/rental',
       icon: '🏠',
-      description: 'Residential Properties',
+      description: 'Homes and apartments for rent',
       code: 'RNT-001',
+    },
+    {
+      label: 'Houses',
+      href: '/houses',
+      icon: '🏡',
+      description: 'Family houses for sale or rent',
+      code: 'HSE-005',
     },
     {
       label: 'Commercial',
       href: '/commercial',
       icon: '🏢',
-      description: 'Business Spaces',
+      description: 'Shops, offices & business spaces',
       code: 'COM-002',
     },
     {
       label: 'Land',
       href: '/land',
       icon: '🌾',
-      description: 'Development Plots',
+      description: 'Plots for building or farming',
       code: 'LND-003',
-    },
-    {
-      label: 'Comrade',
-      href: '/comrade',
-      icon: '🔑',
-      description: 'Premium Access',
-      code: 'PRM-004',
     },
   ]
 
@@ -174,7 +181,7 @@ export default function Welcome() {
         </div>
 
         {/* Futuristic category grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 max-w-6xl mx-auto mb-16">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 max-w-6xl mx-auto mb-16">
           {categories.map((item, index) => (
             <Link
               key={item.label}
