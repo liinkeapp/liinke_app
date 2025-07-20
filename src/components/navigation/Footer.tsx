@@ -80,17 +80,10 @@ const Footer = () => {
                   Properties
                 </Link>
               </li>
+
               <li>
                 <Link
-                  href="/search"
-                  className="text-[#f9f5f0]/80 hover:text-[#c1440e] text-sm transition-colors duration-200"
-                >
-                  Search
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/about"
+                  href="/about-liinke"
                   className="text-[#f9f5f0]/80 hover:text-[#c1440e] text-sm transition-colors duration-200"
                 >
                   About Us
@@ -113,15 +106,7 @@ const Footer = () => {
             <ul className="space-y-2">
               <li>
                 <Link
-                  href="/buy"
-                  className="text-[#f9f5f0]/80 hover:text-[#c1440e] text-sm transition-colors duration-200"
-                >
-                  Buy Property
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/sell"
+                  href="/contact"
                   className="text-[#f9f5f0]/80 hover:text-[#c1440e] text-sm transition-colors duration-200"
                 >
                   Sell Property
@@ -129,7 +114,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/rent"
+                  href="/rentals"
                   className="text-[#f9f5f0]/80 hover:text-[#c1440e] text-sm transition-colors duration-200"
                 >
                   Rent Property
@@ -140,7 +125,7 @@ const Footer = () => {
                   href="/property-management"
                   className="text-[#f9f5f0]/80 hover:text-[#c1440e] text-sm transition-colors duration-200"
                 >
-                  Property Management
+                  Movers
                 </Link>
               </li>
               <li>
@@ -170,11 +155,11 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-3">
                 <FiPhone className="h-5 w-5 text-[#c1440e] flex-shrink-0" />
-                <p className="text-[#f9f5f0]/80 text-sm">+254 700 123 456</p>
+                <p className="text-[#f9f5f0]/80 text-sm">+254 792 149 918</p>
               </div>
               <div className="flex items-center space-x-3">
                 <FiMail className="h-5 w-5 text-[#c1440e] flex-shrink-0" />
-                <p className="text-[#f9f5f0]/80 text-sm">info@liinke.com</p>
+                <p className="text-[#f9f5f0]/80 text-sm">liinkeapp@gmail.com</p>
               </div>
             </div>
           </div>

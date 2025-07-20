@@ -1,6 +1,6 @@
 import { Listings } from '@/types/property'
 
-export function groupPropertiesByLocation(properties: Listings[], threshold = 0.0001) {
+export function groupPropertiesByLocation(properties: Listings[]) {
   const groups: Record<string, Listings[]> = {}
 
   for (const property of properties) {

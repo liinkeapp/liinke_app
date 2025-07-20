@@ -1,9 +1,10 @@
 import React from 'react'
 import Link from 'next/link'
+import { Listings } from '@/types/property'
 
 interface BreadcrumbProps {
   categorySlug: string
-  post: any
+  post: Listings
 }
 
 export function Breadcrumb({ categorySlug, post }: BreadcrumbProps) {
@@ -28,9 +29,7 @@ export function Breadcrumb({ categorySlug, post }: BreadcrumbProps) {
             href={`/${categorySlug}`}
             className="text-[#32620e]/70 hover:text-[#32620e] transition-colors font-medium"
           >
-            {typeof post.type === 'object' && post.type !== null && 'name' in post.type
-              ? post.type.name
-              : 'Properties'}
+            {typeof post.category === 'string' ? post.category : 'Properties'}
           </Link>
           <svg className="w-4 h-4 text-[#32620e]/40" fill="currentColor" viewBox="0 0 20 20">
             <path

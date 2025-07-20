@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { FiUser, FiHeart, FiPhone, FiMapPin, FiLayers, FiUsers } from 'react-icons/fi'
+import { FiMapPin, FiLayers } from 'react-icons/fi'
 import { FaBuilding } from 'react-icons/fa'
+import { FaBed } from 'react-icons/fa6'
+import { GiFamilyHouse } from 'react-icons/gi'
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -24,14 +26,14 @@ const Navbar = () => {
 
   const leftNavLinks = [
     { name: 'Rentals', href: '/rentals', icon: FaBuilding, special: false },
+    { name: 'Houses', href: '/houses', icon: GiFamilyHouse, special: false },
     { name: 'Land', href: '/land', icon: FiLayers, special: false },
     { name: 'Commercial', href: '/commercial', icon: FaBuilding, special: false },
-    { name: 'Map', href: '/map', icon: FiMapPin, special: false },
   ]
 
   const rightNavLinks = [
-    { name: 'Comrade', href: '/comrade', icon: FiUsers, special: true },
-    { name: 'Contact', href: '/contact', icon: FiPhone, special: false },
+    { name: 'Comrade', href: '/comrade', icon: FaBed, special: true },
+    { name: 'Map', href: '/map', icon: FiMapPin, special: false },
   ]
 
   return (
@@ -111,21 +113,7 @@ const Navbar = () => {
           {/* Desktop Action Buttons */}
           <div className="hidden lg:flex items-center space-x-3 ml-6">
             <Link
-              href="/favorites"
-              className="group relative text-[#32620e] hover:text-[#c1440e] p-3 rounded-full transition-all duration-300 hover:scale-110 hover:bg-[#32620e]/5"
-            >
-              <FiHeart className="h-5 w-5" />
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#c1440e] rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
-            </Link>
-            <Link
-              href="/profile"
-              className="group relative text-[#32620e] hover:text-[#c1440e] p-3 rounded-full transition-all duration-300 hover:scale-110 hover:bg-[#32620e]/5"
-            >
-              <FiUser className="h-5 w-5" />
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#c1440e] rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
-            </Link>
-            <Link
-              href="/list-property"
+              href="/contact"
               className="group relative bg-gradient-to-r from-[#c1440e] to-[#c1440e]/80 text-white px-6 py-3 rounded-full text-sm font-medium hover:from-[#a23a0c] hover:to-[#c1440e] transition-all duration-300 hover:scale-105 hover:shadow-lg overflow-hidden"
             >
               <span className="relative z-10">List Property</span>
@@ -192,23 +180,7 @@ const Navbar = () => {
           {/* Mobile Action Buttons */}
           <div className="border-t border-[#32620e]/10 pt-4 mt-4 space-y-3">
             <Link
-              href="/favorites"
-              className="flex items-center space-x-3 text-[#32620e] hover:text-[#c1440e] hover:bg-[#32620e]/5 px-4 py-3 rounded-xl text-base font-medium transition-all duration-300"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <FiHeart className="h-5 w-5" />
-              <span>Favorites</span>
-            </Link>
-            <Link
-              href="/profile"
-              className="flex items-center space-x-3 text-[#32620e] hover:text-[#c1440e] hover:bg-[#32620e]/5 px-4 py-3 rounded-xl text-base font-medium transition-all duration-300"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <FiUser className="h-5 w-5" />
-              <span>Profile</span>
-            </Link>
-            <Link
-              href="/list-property"
+              href="/contact"
               className="group flex items-center justify-center bg-gradient-to-r from-[#c1440e] to-[#c1440e]/80 text-white px-4 py-3 rounded-xl text-base font-medium hover:from-[#a23a0c] hover:to-[#c1440e] transition-all duration-300 hover:scale-[1.02] mt-4 overflow-hidden relative"
               onClick={() => setIsMenuOpen(false)}
             >

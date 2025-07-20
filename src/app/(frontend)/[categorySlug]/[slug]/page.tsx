@@ -6,6 +6,7 @@ import config from '@/payload.config'
 import { getPayload } from 'payload'
 import { notFound } from 'next/navigation'
 import { fetchAllPosts, fetchRelatedPosts } from '@/lib/propertyUtil'
+import { Listings } from '@/types/property'
 
 // Import all the components
 import { PropertyHeader } from '@/components/PropertyComponents/PropertyHeader'
@@ -40,14 +41,9 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
   const data = await fetchRelatedPosts(post.category, slug)
   const relatedPosts = data.slice(0, 3).map((post: any) => ({
     ...post,
-    publishedAt:
-      typeof post.publishedAt === 'string' && post.publishedAt
-        ? post.publishedAt
-        : (post.publishedAt ?? '') || '',
   }))
 
   // Current URL for sharing
-  const categorySlug = post.category
 
   // Format price function
   const formatPrice = (price: number) => {
@@ -58,17 +54,19 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
     }).format(price)
   }
 
+  const categorySlug = post.category || 'all'
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
       {/* Breadcrumb Navigation */}
-      <Breadcrumb categorySlug={categorySlug} post={post} />
+      <Breadcrumb categorySlug={categorySlug} post={post as Listings} />
 
       <div className="container mx-auto px-6 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-2">
           {/* Main Content */}
           <div className="lg:col-span-3 space-y-8">
             {/* Property Header with Carousel */}
-            <PropertyHeader post={post} formatPrice={formatPrice} />
+            <PropertyHeader post={post as Listings} formatPrice={formatPrice} />
 
             {/* Property Description */}
             <PropertyDescription description={post.description} />
@@ -123,6 +121,7 @@ export async function generateStaticParams() {
     const allPosts = await fetchAllPosts(1, 100)
     return allPosts.posts.map((post) => ({
       slug: post.slug,
+      categorySlug: post.type,
     }))
   } catch (error) {
     console.error('Error generating static params:', error)

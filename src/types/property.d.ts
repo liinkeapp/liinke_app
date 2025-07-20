@@ -3,16 +3,17 @@ export interface Listings {
   slug: string
   title: string
   category: string
-  publishedAt: string
+  publishedAt: string | null | undefined
   price: number
   description?: string
-  bedrooms: number
-  bathrooms: number
+  bedrooms: number | null | undefined
+  bathrooms: number | null | undefined
   location?: {
     lat: number
     lng: number
     address?: string | null
   }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   images?: any[]
   features?: { feature: string }[]
   status?: 'available' | 'sold' | 'rented'
