@@ -1,25 +1,33 @@
-export const dynamic = 'force-dynamic'
 import React from 'react'
 import { fetchByType } from '@/lib/propertyUtil'
 import PropertyListingClient from '@/components/listings/PropertyListing'
 
-type PageProps = {
-  params: { categorySlug: string }
-  searchParams?: {
-    page?: string
-    search?: string
-    priceMin?: string
-    priceMax?: string
-    bedrooms?: string
-    bathrooms?: string
-    propertyType?: string
-    sortBy?: string
-    view?: string
-  }
+interface SearchParams {
+  page?: string
+  search?: string
+  priceMin?: string
+  priceMax?: string
+  bedrooms?: string
+  bathrooms?: string
+  propertyType?: string
+  sortBy?: string
+  view?: string
 }
 
-export default async function Page({ params, searchParams }: PageProps) {
-  const categorySlug = params.categorySlug
+interface PageProps {
+  params: { categorySlug: string }
+  searchParams?: SearchParams
+}
+
+export default async function Page({
+  params,
+  searchParams,
+}: PageProps): Promise<React.JSX.Element> {
+  // Extract category slug from params
+  if (!params || !params.categorySlug) {
+    throw new Error('Category slug is required in params')
+  }
+  const { categorySlug } = params
   const { posts } = await fetchByType(categorySlug)
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -122,3 +130,5 @@ export default async function Page({ params, searchParams }: PageProps) {
     </div>
   )
 }
+
+export const dynamic = 'force-dynamic'

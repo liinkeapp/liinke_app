@@ -8,12 +8,7 @@ import { Listings } from '@/types/property'
 import { useRouter } from 'next/navigation'
 import { MarkerClusterer, GridAlgorithm } from '@googlemaps/markerclusterer'
 import { MarkerModal } from './MarkerModal'
-import {
-  groupPropertiesByLocation,
-  createEnhancedMarker,
-  mapStyles,
-  createCustomClusterRenderer,
-} from '@/lib/mapUtils'
+import { groupPropertiesByLocation, mapStyles, createCustomClusterRenderer } from '@/lib/mapUtils'
 import LoadError from './LoadError'
 import Loaded from './Loaded'
 
@@ -54,6 +49,88 @@ export default function Map({ properties }: { properties: Listings[] }) {
   const grouped = groupPropertiesByLocation(validProperties)
 
   // Custom cluster renderer with your color scheme
+
+  async function createEnhancedMarker(
+    imageUrl: string,
+    isMultiple: boolean = false,
+    count: number = 1,
+  ): Promise<string> {
+    return new Promise((resolve) => {
+      const size = isMultiple ? 80 : 70
+      const canvas = document.createElement('canvas')
+      canvas.width = size
+      canvas.height = size
+
+      const ctx = canvas.getContext('2d')
+      const img = new window.Image()
+      img.crossOrigin = 'anonymous'
+
+      img.onload = () => {
+        if (!ctx) return resolve('/prop.jpg')
+
+        ctx.clearRect(0, 0, size, size)
+
+        // Draw enhanced shadow
+        ctx.save()
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.3)'
+        ctx.shadowBlur = isMultiple ? 10 : 6
+        ctx.shadowOffsetX = 2
+        ctx.shadowOffsetY = 2
+
+        // Draw main circle background
+        ctx.beginPath()
+        ctx.arc(size / 2, size / 2, size / 2 - 6, 0, Math.PI * 2)
+        ctx.fillStyle = '#f9f5f0'
+        ctx.fill()
+        ctx.clip()
+
+        // Draw image
+        const imageSize = size - 12
+        const imageOffset = 6
+        ctx.drawImage(img, imageOffset, imageOffset, imageSize, imageSize)
+        ctx.restore()
+
+        // Draw border with different colors for single vs multiple
+        ctx.beginPath()
+        ctx.arc(size / 2, size / 2, size / 2 - 6, 0, Math.PI * 2)
+        ctx.strokeStyle = isMultiple ? '#c1440e' : '#32620e'
+        ctx.lineWidth = isMultiple ? 4 : 3
+        ctx.stroke()
+
+        // Add count badge for multiple properties
+        if (isMultiple && count > 1) {
+          const badgeSize = 24
+          const badgeX = size - badgeSize / 2 - 2
+          const badgeY = badgeSize / 2 + 2
+
+          // Badge background
+          ctx.beginPath()
+          ctx.arc(badgeX, badgeY, badgeSize / 2, 0, Math.PI * 2)
+          ctx.fillStyle = '#c1440e'
+          ctx.fill()
+
+          // Badge border
+          ctx.beginPath()
+          ctx.arc(badgeX, badgeY, badgeSize / 2, 0, Math.PI * 2)
+          ctx.strokeStyle = '#f9f5f0'
+          ctx.lineWidth = 2
+          ctx.stroke()
+
+          // Badge text
+          ctx.fillStyle = '#f9f5f0'
+          ctx.font = 'bold 12px Arial'
+          ctx.textAlign = 'center'
+          ctx.textBaseline = 'middle'
+          ctx.fillText(count.toString(), badgeX, badgeY)
+        }
+
+        resolve(canvas.toDataURL())
+      }
+
+      img.onerror = () => resolve('/prop.jpg')
+      img.src = imageUrl
+    })
+  }
 
   useEffect(() => {
     const loadIcons = async () => {

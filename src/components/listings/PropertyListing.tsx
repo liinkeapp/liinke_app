@@ -63,8 +63,8 @@ export default function PropertyListingClient({
         (!priceRange.min || property.price >= Number(priceRange.min)) &&
         (!priceRange.max || property.price <= Number(priceRange.max))
 
-      const matchesBedrooms = !bedrooms || property.bedrooms >= Number(bedrooms)
-      const matchesBathrooms = !bathrooms || property.bathrooms >= Number(bathrooms)
+      const matchesBedrooms = !bedrooms || (property?.bedrooms ?? 0) >= Number(bedrooms)
+      const matchesBathrooms = !bathrooms || (property?.bathrooms ?? 0) >= Number(bathrooms)
       const matchesType = !propertyType || property.category === propertyType
 
       return matchesSearch && matchesPrice && matchesBedrooms && matchesBathrooms && matchesType
@@ -78,7 +78,7 @@ export default function PropertyListingClient({
         case 'price-high':
           return b.price - a.price
         case 'bedrooms':
-          return b.bedrooms - a.bedrooms
+          return (b?.bedrooms ?? 0) - (a?.bedrooms ?? 0)
         case 'newest':
         default:
           return new Date(b.publishedAt || '').getTime() - new Date(a.publishedAt || '').getTime()

@@ -4,7 +4,7 @@ import React from 'react'
 import MapPage from '@/components/map/MapPage'
 import { fetchAllPosts } from '@/lib/propertyUtil'
 
-type PageProps = {
+interface PageProps {
   params: { categorySlug: string }
   searchParams?: {
     page?: string

@@ -5,6 +5,30 @@ import Link from 'next/link'
 export default function Welcome() {
   const [isLoaded, setIsLoaded] = useState(false)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 })
+
+  useEffect(() => {
+    setIsLoaded(true)
+
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY })
+    }
+
+    const handleResize = () => {
+      setWindowSize({ width: window.innerWidth, height: window.innerHeight })
+    }
+
+    // Set initial window size
+    handleResize()
+
+    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('resize', handleResize)
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
 
   useEffect(() => {
     setIsLoaded(true)
@@ -119,7 +143,7 @@ export default function Welcome() {
             style={{
               top: `${20 + Math.random() * 60}%`,
               left: `${10 + Math.random() * 80}%`,
-              transform: `translate(${(mousePosition.x - window.innerWidth / 2) * (0.01 + i * 0.002)}px, ${(mousePosition.y - window.innerHeight / 2) * (0.01 + i * 0.002)}px)`,
+              transform: `translate(${(mousePosition.x - windowSize.width / 2) * (0.01 + i * 0.002)}px, ${(mousePosition.y - windowSize.height / 2) * (0.01 + i * 0.002)}px)`,
               animationDelay: `${i * 0.5}s`,
               animationDuration: `${3 + Math.random() * 2}s`,
             }}
