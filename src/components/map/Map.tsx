@@ -251,11 +251,10 @@ export default function Map({ properties }: { properties: Listings[] }) {
     setActiveInfoWindow(key)
   }
 
-  const handleMarkerLeave = () => {
+  const handleMarkerLeave = (key: string) => {
     setHoveredMarker(null)
-    // Keep info window open for a short time to allow interaction
     setTimeout(() => {
-      if (!hoveredMarker) {
+      if (hoveredMarker === key) {
         setActiveInfoWindow(null)
       }
     }, 200)
@@ -291,7 +290,7 @@ export default function Map({ properties }: { properties: Listings[] }) {
       // Add event listeners
       marker.addListener('click', () => handleMarkerClick(key, group))
       marker.addListener('mouseover', () => handleMarkerHover(key))
-      marker.addListener('mouseout', handleMarkerLeave)
+      marker.addListener('mouseout', () => handleMarkerLeave(key))
 
       // Store reference to group for info windows
       ;(marker as any).groupKey = key
@@ -379,13 +378,10 @@ export default function Map({ properties }: { properties: Listings[] }) {
           return (
             <InfoWindow
               key={`info-${groupKey}`}
-              position={{
-                lat: position.lat() + 0.001,
-                lng: position.lng(),
-              }}
+              position={position}
               onCloseClick={() => setActiveInfoWindow(null)}
               options={{
-                pixelOffset: new google.maps.Size(0, -10),
+                pixelOffset: new google.maps.Size(0, -20),
                 disableAutoPan: false,
               }}
             >

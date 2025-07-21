@@ -1,13 +1,6 @@
 import Link from 'next/link'
-import {
-  FiMail,
-  FiPhone,
-  FiMapPin,
-  FiFacebook,
-  FiTwitter,
-  FiInstagram,
-  FiLinkedin,
-} from 'react-icons/fi'
+import { FiMail, FiPhone, FiMapPin, FiFacebook, FiInstagram } from 'react-icons/fi'
+import { FaXTwitter, FaTiktok } from 'react-icons/fa6'
 import Image from 'next/image'
 
 const Footer = () => {
@@ -33,30 +26,30 @@ const Footer = () => {
               renters with quality real estate solutions.
             </p>
             <div className="flex space-x-4">
-              <a
-                href="#"
+              <Link
+                href="https://www.facebook.com/profile.php?id=61578422735503"
                 className="text-[#f9f5f0]/60 hover:text-[#c1440e] transition-colors duration-200"
               >
                 <FiFacebook className="h-5 w-5" />
-              </a>
-              <a
+              </Link>
+              <Link
                 href="#"
                 className="text-[#f9f5f0]/60 hover:text-[#c1440e] transition-colors duration-200"
               >
-                <FiTwitter className="h-5 w-5" />
-              </a>
-              <a
+                <FaXTwitter className="h-5 w-5" />
+              </Link>
+              <Link
                 href="#"
                 className="text-[#f9f5f0]/60 hover:text-[#c1440e] transition-colors duration-200"
               >
                 <FiInstagram className="h-5 w-5" />
-              </a>
-              <a
+              </Link>
+              <Link
                 href="#"
                 className="text-[#f9f5f0]/60 hover:text-[#c1440e] transition-colors duration-200"
               >
-                <FiLinkedin className="h-5 w-5" />
-              </a>
+                <FaTiktok className="h-5 w-5" />
+              </Link>
             </div>
           </div>
 
@@ -171,7 +164,7 @@ const Footer = () => {
             <div className="text-[#f9f5f0]/60 text-sm">© {date} Liinke. All rights reserved.</div>
             <div className="flex space-x-6 text-sm">
               <Link
-                href="/privacy"
+                href="/privacy-policy"
                 className="text-[#f9f5f0]/60 hover:text-[#c1440e] transition-colors duration-200"
               >
                 Privacy Policy
@@ -181,12 +174,6 @@ const Footer = () => {
                 className="text-[#f9f5f0]/60 hover:text-[#c1440e] transition-colors duration-200"
               >
                 Terms of Service
-              </Link>
-              <Link
-                href="/cookies"
-                className="text-[#f9f5f0]/60 hover:text-[#c1440e] transition-colors duration-200"
-              >
-                Cookie Policy
               </Link>
             </div>
           </div>
