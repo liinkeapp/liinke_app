@@ -1,5 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react'
+import FloatingDots from './FloatingDots'
 
 export default function Contact() {
   const [isLoaded, setIsLoaded] = useState(false)
@@ -13,9 +14,17 @@ export default function Contact() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState('')
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [dynamicFormData, setDynamicFormData] = useState<any>(null)
 
   useEffect(() => {
     setIsLoaded(true)
+
+    // Load dynamic form data
+    fetch('/api/get-form')
+      .then((res) => res.json())
+      .then((data) => setDynamicFormData(data))
+      .catch(() => console.error('Could not load form data'))
 
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY })
@@ -25,23 +34,100 @@ export default function Contact() {
     return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [])
 
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {}
+    let isValid = true
+
+    // Name validation
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required'
+      isValid = false
+    }
+
+    // Email validation
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required'
+      isValid = false
+    } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address'
+      isValid = false
+    }
+
+    // Message validation
+    if (!formData.message.trim()) {
+      newErrors.message = 'Message is required'
+      isValid = false
+    }
+
+    setErrors(newErrors)
+    return isValid
+  }
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
   ) => {
+    const { name, value } = e.target
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: value,
     })
+
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: '',
+      })
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsSubmitting(true)
     setSubmitStatus('')
 
-    // Simulate form submission
-    setTimeout(() => {
-      setIsSubmitting(false)
+    if (!validateForm()) return
+
+    setIsSubmitting(true)
+
+    try {
+      let payload
+
+      if (dynamicFormData) {
+        // Use dynamic form submission if available
+        payload = {
+          form: dynamicFormData.id,
+          submissionData: [
+            { field: 'name', value: formData.name },
+            { field: 'email', value: formData.email },
+            { field: 'phone', value: formData.phone },
+            { field: 'message', value: formData.message },
+          ],
+        }
+
+        const res = await fetch(`${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/form-submissions`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+
+        if (!res.ok) {
+          throw new Error('Form submission failed')
+        }
+      } else {
+        // Fallback to static form submission
+        payload = formData
+
+        const res = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+
+        if (!res.ok) {
+          throw new Error('Form submission failed')
+        }
+      }
+
       setSubmitStatus('success')
       setFormData({
         name: '',
@@ -50,7 +136,13 @@ export default function Contact() {
         propertyType: '',
         message: '',
       })
-    }, 2000)
+    } catch (error) {
+      console.error('Error submitting form:', error)
+      setErrors({ form: 'There was a problem submitting your form. Please try again.' })
+      setSubmitStatus('error')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const contactMethods = [
@@ -122,19 +214,7 @@ export default function Contact() {
         />
 
         {/* Floating orbs with mouse parallax */}
-        {[...Array(6)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-3 h-3 bg-gradient-to-r from-[#32620e]/60 to-[#c1440e]/60 rounded-full animate-float"
-            style={{
-              top: `${20 + Math.random() * 60}%`,
-              left: `${10 + Math.random() * 80}%`,
-              transform: `translate(${(mousePosition.x - (typeof window !== 'undefined' ? window.innerWidth : 0) / 2) * (0.01 + i * 0.002)}px, ${(mousePosition.y - (typeof window !== 'undefined' ? window.innerHeight : 0) / 2) * (0.01 + i * 0.002)}px)`,
-              animationDelay: `${i * 0.3}s`,
-              animationDuration: `${3 + Math.random() * 2}s`,
-            }}
-          />
-        ))}
+        <FloatingDots />
 
         {/* Scanning line effect */}
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#c1440e]/60 to-transparent animate-scan"></div>
@@ -206,9 +286,14 @@ export default function Contact() {
                       value={formData.name}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 bg-white/50 border border-[#32620e]/30 rounded-lg focus:border-[#c1440e]/60 focus:outline-none focus:ring-2 focus:ring-[#c1440e]/20 transition-all duration-300 font-mono"
+                      className={`w-full px-4 py-3 bg-white/50 border rounded-lg focus:outline-none focus:ring-2 transition-all duration-300 font-mono ${
+                        errors.name
+                          ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
+                          : 'border-[#32620e]/30 focus:border-[#c1440e]/60 focus:ring-[#c1440e]/20'
+                      }`}
                       placeholder="Enter your name"
                     />
+                    {errors.name && <p className="text-red-500 text-sm font-mono">{errors.name}</p>}
                   </div>
 
                   {/* Email Field */}
@@ -222,9 +307,16 @@ export default function Contact() {
                       value={formData.email}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 bg-white/50 border border-[#32620e]/30 rounded-lg focus:border-[#c1440e]/60 focus:outline-none focus:ring-2 focus:ring-[#c1440e]/20 transition-all duration-300 font-mono"
+                      className={`w-full px-4 py-3 bg-white/50 border rounded-lg focus:outline-none focus:ring-2 transition-all duration-300 font-mono ${
+                        errors.email
+                          ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
+                          : 'border-[#32620e]/30 focus:border-[#c1440e]/60 focus:ring-[#c1440e]/20'
+                      }`}
                       placeholder="your.email@domain.com"
                     />
+                    {errors.email && (
+                      <p className="text-red-500 text-sm font-mono">{errors.email}</p>
+                    )}
                   </div>
 
                   {/* Phone Field */}
@@ -253,10 +345,24 @@ export default function Contact() {
                       onChange={handleInputChange}
                       required
                       rows={5}
-                      className="w-full px-4 py-3 bg-white/50 border border-[#32620e]/30 rounded-lg focus:border-[#c1440e]/60 focus:outline-none focus:ring-2 focus:ring-[#c1440e]/20 transition-all duration-300 resize-none font-mono"
+                      className={`w-full px-4 py-3 bg-white/50 border rounded-lg focus:outline-none focus:ring-2 transition-all duration-300 resize-none font-mono ${
+                        errors.message
+                          ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
+                          : 'border-[#32620e]/30 focus:border-[#c1440e]/60 focus:ring-[#c1440e]/20'
+                      }`}
                       placeholder="Describe your property needs or inquiry..."
                     />
+                    {errors.message && (
+                      <p className="text-red-500 text-sm font-mono">{errors.message}</p>
+                    )}
                   </div>
+
+                  {/* Form-level error */}
+                  {errors.form && (
+                    <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-red-600 font-mono text-sm">{errors.form}</p>
+                    </div>
+                  )}
 
                   {/* Submit Button */}
                   <button
@@ -287,6 +393,17 @@ export default function Contact() {
                         <div className="w-2 h-2 bg-[#32620e] rounded-full animate-pulse"></div>
                         <span className="text-sm tracking-wide">
                           TRANSMISSION SUCCESSFUL - RESPONSE INCOMING
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {submitStatus === 'error' && (
+                    <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                      <div className="flex items-center gap-3 text-red-600 font-mono">
+                        <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                        <span className="text-sm tracking-wide">
+                          TRANSMISSION FAILED - RETRY REQUIRED
                         </span>
                       </div>
                     </div>

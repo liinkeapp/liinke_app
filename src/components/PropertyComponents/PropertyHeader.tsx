@@ -9,6 +9,7 @@ interface PropertyHeaderProps {
 }
 
 export function PropertyHeader({ post, formatPrice }: PropertyHeaderProps) {
+  console.log('PropertyHeader post:', post)
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-[#32620e]/10 overflow-hidden mb-8">
       {/* Hero Image Carousel */}
@@ -53,65 +54,60 @@ export function PropertyHeader({ post, formatPrice }: PropertyHeaderProps) {
           </div>
 
           {/* Key Features - Compact Grid */}
-          {post.bedrooms ||
-            (post.bathrooms && (
-              <div className="grid grid-cols-3 gap-3">
-                <div className="bg-gradient-to-br from-[#32620e]/5 to-[#32620e]/10 rounded-xl p-4 text-center border border-[#32620e]/10">
-                  <div className="w-8 h-8 mx-auto mb-2 bg-[#32620e]/10 rounded-lg flex items-center justify-center">
-                    <svg className="w-4 h-4 text-[#32620e]" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14zM19 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                  </div>
-                  <div className="text-[#32620e] font-semibold text-sm">
-                    {post.bedrooms} Bed{post.bedrooms !== 1 ? 's' : ''}
-                  </div>
+          {(post.bedrooms !== undefined || post.bathrooms !== undefined || post.status) && (
+            <div className="grid grid-cols-3 gap-3">
+              <div className="bg-gradient-to-br from-[#32620e]/5 to-[#32620e]/10 rounded-xl p-4 text-center border border-[#32620e]/10">
+                <div className="w-8 h-8 mx-auto mb-2 bg-[#32620e]/10 rounded-lg flex items-center justify-center">
+                  <svg className="w-4 h-4 text-[#32620e]" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14zM19 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
                 </div>
+                <div className="text-[#32620e] font-semibold text-sm">
+                  {post.bedrooms} Bed{post.bedrooms !== 1 ? 's' : ''}
+                </div>
+              </div>
 
-                <div className="bg-gradient-to-br from-[#32620e]/5 to-[#32620e]/10 rounded-xl p-4 text-center border border-[#32620e]/10">
-                  <div className="w-8 h-8 mx-auto mb-2 bg-[#32620e]/10 rounded-lg flex items-center justify-center">
+              <div className="bg-gradient-to-br from-[#32620e]/5 to-[#32620e]/10 rounded-xl p-4 text-center border border-[#32620e]/10">
+                <div className="w-8 h-8 mx-auto mb-2 bg-[#32620e]/10 rounded-lg flex items-center justify-center">
+                  <svg className="w-4 h-4 text-[#32620e]" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      fillRule="evenodd"
+                      d="M2 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 002 2H4a2 2 0 01-2-2V5zm3 1h6v4H5V6zm6 6H5v2h6v-2z"
+                    />
+                    <path d="M15 7h1a2 2 0 012 2v5.5a1.5 1.5 0 01-3 0V7z" />
+                  </svg>
+                </div>
+                <div className="text-[#32620e] font-semibold text-sm">
+                  {post.bathrooms} Bath{post.bathrooms !== 1 ? 's' : ''}
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-[#32620e]/5 to-[#32620e]/10 rounded-xl p-4 text-center border border-[#32620e]/10">
+                <div className="w-8 h-8 mx-auto mb-2 bg-[#32620e]/10 rounded-lg flex items-center justify-center">
+                  {post.status === 'available' ? (
                     <svg className="w-4 h-4 text-[#32620e]" fill="currentColor" viewBox="0 0 20 20">
                       <path
                         fillRule="evenodd"
-                        d="M2 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 002 2H4a2 2 0 01-2-2V5zm3 1h6v4H5V6zm6 6H5v2h6v-2z"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                       />
-                      <path d="M15 7h1a2 2 0 012 2v5.5a1.5 1.5 0 01-3 0V7z" />
                     </svg>
-                  </div>
-                  <div className="text-[#32620e] font-semibold text-sm">
-                    {post.bathrooms} Bath{post.bathrooms !== 1 ? 's' : ''}
-                  </div>
+                  ) : (
+                    <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        fillRule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                      />
+                    </svg>
+                  )}
                 </div>
-
-                <div className="bg-gradient-to-br from-[#32620e]/5 to-[#32620e]/10 rounded-xl p-4 text-center border border-[#32620e]/10">
-                  <div className="w-8 h-8 mx-auto mb-2 bg-[#32620e]/10 rounded-lg flex items-center justify-center">
-                    {post.status === 'available' ? (
-                      <svg
-                        className="w-4 h-4 text-[#32620e]"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        />
-                      </svg>
-                    ) : (
-                      <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                          fillRule="evenodd"
-                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                        />
-                      </svg>
-                    )}
-                  </div>
-                  <div
-                    className={`font-semibold text-sm ${post.status === 'available' ? 'text-[#32620e]' : 'text-red-500'}`}
-                  >
-                    {post.status === 'available' ? 'Available' : 'Unavailable'}
-                  </div>
+                <div
+                  className={`font-semibold text-sm ${post.status === 'available' ? 'text-[#32620e]' : 'text-red-500'}`}
+                >
+                  {post.status === 'available' ? 'Available' : 'Unavailable'}
                 </div>
               </div>
-            ))}
+            </div>
+          )}
 
           {/* Additional Property Details Row */}
           <div className="mt-4 pt-4 border-t border-[#32620e]/10">
