@@ -7,6 +7,12 @@ const Properties: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'category', 'transactionType', 'price', 'status'],
   },
+  access: {
+    read: () => true,
+    create: () => true,
+    update: () => true,
+    delete: () => false, // Disable delete for properties
+  },
   hooks: {
     beforeChange: [
       ({ data }) => {

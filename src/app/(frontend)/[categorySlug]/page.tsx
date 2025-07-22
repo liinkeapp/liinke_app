@@ -1,6 +1,73 @@
 import React from 'react'
 import { fetchByType } from '@/lib/propertyUtil'
 import PropertyListingClient from '@/components/listings/PropertyListing'
+import config from '@/payload.config'
+import { getPayload } from 'payload'
+import { Metadata } from 'next'
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { categorySlug: string }
+}): Promise<Metadata> {
+  const { categorySlug } = params
+
+  const payload = await getPayload({ config })
+
+  const { docs: categories } = await payload.find({
+    collection: 'properties',
+    where: {
+      slug: {
+        equals: categorySlug,
+      },
+    },
+    limit: 1,
+  })
+
+  const category = categories[0]
+
+  if (!category) {
+    return {
+      title: 'Category Not Found | Liinke.com',
+      description:
+        'The property category you are looking for does not exist. Discover available rentals, land, or commercial listings at Liinke.com.',
+    }
+  }
+
+  const categoryName = category.category
+
+  return {
+    title: `${categoryName} Listings | Liinke Real Estate Platform`,
+    description: `Explore verified ${categoryName.toLowerCase()} listings on Liinke — Kenya's smart property discovery tool. Find your next space today.`,
+    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL!),
+    openGraph: {
+      title: `${categoryName} Listings | Liinke`,
+      description: `Browse top-rated ${categoryName.toLowerCase()} properties across Kenya. Verified, up-to-date listings powered by Liinke.`,
+      url: `${process.env.NEXT_PUBLIC_SITE_URL}/${categorySlug}`,
+      siteName: 'Liinke',
+      images: [
+        {
+          url: '/liinke-preview.png',
+          width: 1200,
+          height: 630,
+          alt: `Verified ${categoryName} Listings on Liinke`,
+        },
+      ],
+      locale: 'en_KE',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${categoryName} Listings | Liinke`,
+      description: `Find your next ${categoryName.toLowerCase()} property with Liinke — real-time map view and verified agents.`,
+      images: ['/liinke-preview.png'],
+      site: '@liinke_ke',
+    },
+    alternates: {
+      canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/${categorySlug}`,
+    },
+  }
+}
 
 interface SearchParams {
   page?: string

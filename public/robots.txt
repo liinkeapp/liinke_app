@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /api/
+Disallow: /__next/
+
+Host: https://www.liinke.com
+Sitemap: https://www.liinke.com/sitemap.xml

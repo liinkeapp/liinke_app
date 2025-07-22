@@ -15,6 +15,105 @@ import { PropertyFeatures } from '@/components/PropertyComponents/PropertyFeatur
 import { RelatedProperties } from '@/components/PropertyComponents/RelatedProperties'
 import { Breadcrumb } from '@/components/PropertyComponents/Breadcrumb'
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string; categorySlug: string }>
+}) {
+  const { slug, categorySlug } = await params
+
+  const payloadConfig = await config
+  const payload = await getPayload({ config: payloadConfig })
+
+  const { docs } = await payload.find({
+    collection: 'properties',
+    where: {
+      slug: { equals: slug },
+    },
+    depth: 3,
+  })
+
+  const post = docs[0]
+
+  if (!post) {
+    return {
+      title: 'Property Not Found – Liinke.com',
+      description:
+        'The property listing you’re looking for does not exist. Discover verified real estate opportunities across Kenya on Liinke.',
+    }
+  }
+
+  const postTitle = post.title || 'Property Listing – Liinke'
+  const location = post.location || 'Kenya'
+  const category = post.category || 'property'
+
+  const description =
+    post.description?.substring(0, 160) ||
+    `Find a ${category} in ${location} on Liinke — Kenya's smart property platform.`
+
+  const imageUrl =
+    Array.isArray(post.images) &&
+    post.images.length > 0 &&
+    typeof post.images[0] === 'object' &&
+    post.images[0] !== null &&
+    'url' in post.images[0] &&
+    typeof (post.images[0] as any).url === 'string'
+      ? (post.images[0] as any).url
+      : '/liinke-preview.png'
+
+  const pageUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/${categorySlug}/${slug}`
+
+  return {
+    title: `${postTitle} | Liinke Real Estate`,
+    description: description,
+    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL!),
+    openGraph: {
+      title: `${postTitle} | Liinke`,
+      description: description,
+      url: pageUrl,
+      siteName: 'Liinke',
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: `${postTitle} - Property on Liinke`,
+        },
+      ],
+      type: 'article',
+      locale: 'en_KE',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${postTitle} | Liinke`,
+      description: description,
+      images: [imageUrl],
+      site: '@liinke_ke',
+    },
+    alternates: {
+      canonical: pageUrl,
+    },
+    authors: ['Liinke Verified Agent'],
+    publisher: 'Liinke',
+    icons: {
+      icon: '/favicon.ico',
+      shortcut: '/favicon.ico',
+      apple: '/apple-touch-icon.png',
+    },
+    other: {
+      'og:title': `${postTitle} | Liinke`,
+      'og:description': description,
+      'og:image': imageUrl,
+      'og:url': pageUrl,
+      'og:type': 'article',
+      'twitter:image': imageUrl,
+      'twitter:title': `${postTitle} | Liinke`,
+      'twitter:description': description,
+      'twitter:card': 'summary_large_image',
+    },
+  }
+}
+
 export default async function PropertyPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const payloadConfig = await config
