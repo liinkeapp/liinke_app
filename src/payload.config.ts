@@ -9,7 +9,6 @@ import { s3Storage } from '@payloadcms/storage-s3'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import nodemailer from 'nodemailer'
-import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
@@ -50,25 +49,23 @@ export default buildConfig({
     }),
   }),
   plugins: [
-    payloadCloudPlugin(),
-
-    // s3Storage({
-    //   collections: {
-    //     media: {
-    //       prefix: 'media',
-    //     },
-    //   },
-    //   bucket: process.env.S3_BUCKET || '',
-    //   config: {
-    //     forcePathStyle: true,
-    //     credentials: {
-    //       accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
-    //       secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
-    //     },
-    //     region: process.env.S3_REGION,
-    //     endpoint: process.env.S3_ENDPOINT,
-    //   },
-    // }),
+    s3Storage({
+      collections: {
+        media: {
+          prefix: 'media',
+        },
+      },
+      bucket: process.env.S3_BUCKET || '',
+      config: {
+        forcePathStyle: true,
+        credentials: {
+          accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
+          secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
+        },
+        region: process.env.S3_REGION,
+        endpoint: process.env.S3_ENDPOINT,
+      },
+    }),
     formBuilderPlugin({
       fields: {
         text: true,

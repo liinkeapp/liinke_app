@@ -132,9 +132,9 @@ export default function PropertyListingClient({
     <div className="container mx-auto px-4 py-8">
       {/* Search and Filter Bar */}
       <div className="bg-white rounded-2xl shadow-lg border border-[#32620e]/10 p-6 mb-8">
-        <div className="flex flex-row lg:flex-row gap-4 items-center">
+        <div className="flex flex-col lg:flex-row gap-4 items-center">
           {/* Search Input */}
-          <div className="flex-1 relative">
+          <div className="flex-1 relative w-full">
             <svg
               className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#32620e]/50 w-5 h-5"
               fill="none"
@@ -157,43 +157,44 @@ export default function PropertyListingClient({
             />
           </div>
 
-          {/* View Toggle */}
-          <div className="flex bg-[#32620e]/10 rounded-lg p-1">
-            {[
-              { key: 'grid', icon: '⊞', label: 'Grid' },
-              { key: 'map', icon: '🗺', label: 'Map' },
-            ].map(({ key, icon, label }) => (
-              <button
-                key={key}
-                onClick={() => setView(key as 'grid' | 'map')}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                  view === key
-                    ? 'bg-[#32620e] text-white shadow-sm'
-                    : 'text-[#32620e] hover:bg-[#32620e]/10'
-                }`}
-                title={label}
-              >
-                <span className="mr-2">{icon}</span>
-                <span className="hidden sm:inline">{label}</span>
-              </button>
-            ))}
+          <div className="flex  items-center gap-4">
+            {/* View Toggle */}
+            <div className="flex bg-[#32620e]/10 rounded-lg p-1">
+              {[
+                { key: 'grid', icon: '⊞', label: 'Grid' },
+                { key: 'map', icon: '🗺', label: 'Map' },
+              ].map(({ key, icon, label }) => (
+                <button
+                  key={key}
+                  onClick={() => setView(key as 'grid' | 'map')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                    view === key
+                      ? 'bg-[#32620e] text-white shadow-sm'
+                      : 'text-[#32620e] hover:bg-[#32620e]/10'
+                  }`}
+                  title={label}
+                >
+                  <span className="mr-2">{icon}</span>
+                  <span className="hidden sm:inline">{label}</span>
+                </button>
+              ))}
+            </div>
+            {/* Filter Toggle */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center gap-2 px-4 py-3 bg-[#c1440e] text-white rounded-lg hover:bg-[#c1440e]/90 transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z"
+                />
+              </svg>
+              Filters
+            </button>
           </div>
-
-          {/* Filter Toggle */}
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2 px-4 py-3 bg-[#c1440e] text-white rounded-lg hover:bg-[#c1440e]/90 transition-colors"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z"
-              />
-            </svg>
-            Filters
-          </button>
         </div>
 
         {/* Advanced Filters */}

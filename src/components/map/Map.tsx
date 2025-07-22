@@ -317,7 +317,7 @@ export default function Map({ properties }: { properties: Listings[] }) {
   }
 
   return (
-    <div className="w-full h-96 lg:h-[500px] xl:h-[600px] relative rounded-xl overflow-hidden border-2 border-[#32620e]/50">
+    <div className="w-full h-[700px] md:h-[600px] lg:h-[600px] xl:h-[600px] relative rounded-xl overflow-hidden border-2 border-[#32620e]/50">
       {/* Loading overlay for markers */}
       {isLoadingMarkers && (
         <div className="absolute top-4 left-4 z-10 bg-[#f9f5f0]/95 backdrop-blur-sm rounded-lg px-4 py-2 border border-[#32620e]/20">

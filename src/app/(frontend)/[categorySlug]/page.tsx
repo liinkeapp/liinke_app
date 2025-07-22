@@ -63,7 +63,7 @@ export default async function Page({
         <div className="relative z-10 container mx-auto px-4 w-full">
           <div className="max-w-5xl mx-auto">
             {/* Main Title Section */}
-            <div className="text-center mb-12">
+            <div className="text-center md:mb-12">
               {/* Category Label */}
               <div className="inline-flex items-center gap-2 mb-6">
                 <div className="w-8 h-px bg-gradient-to-r from-transparent to-[#c1440e]"></div>
@@ -74,7 +74,7 @@ export default async function Page({
               </div>
 
               {/* Main Heading with Glitch Effect */}
-              <h1 className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-bold mb-6 relative group">
+              <h1 className="text-5xl md:text-5xl lg:text-6xl font-bold mb-6 relative group">
                 <span className="relative inline-block">
                   <span className="bg-gradient-to-r from-white via-[#f9f5f0] to-white bg-clip-text text-transparent capitalize tracking-tight leading-none">
                     {categoryName}
@@ -84,8 +84,8 @@ export default async function Page({
             </div>
 
             {/* Bottom Info Bar */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 ">
-              <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="hidden md:flex items-center gap-4">
                 {/* Right side - Time display */}
                 <div className="text-right">
                   <div className="text-xs font-mono text-white/60 mb-1">CURRENT SESSION</div>
