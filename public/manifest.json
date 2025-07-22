@@ -1,0 +1,20 @@
+{
+  "name": "Liinke",
+  "short_name": "Liinke",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#32620e",
+  "background_color": "#f9f5f0",
+  "icons": [
+    {
+      "src": "/web-app-manifest-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
