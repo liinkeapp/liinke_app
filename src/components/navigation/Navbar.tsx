@@ -170,7 +170,7 @@ const Navbar = () => {
                 <span>{link.name}</span>
                 {link.special && (
                   <span className="ml-auto text-xs bg-[#c1440e]/20 text-[#c1440e] px-2 py-1 rounded-full">
-                    VIP
+                    Affordable
                   </span>
                 )}
               </Link>

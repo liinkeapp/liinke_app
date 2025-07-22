@@ -140,6 +140,29 @@ const Properties: CollectionConfig = {
       type: 'date',
       defaultValue: () => new Date(),
     },
+
+    {
+      name: 'contactinfo',
+      type: 'group',
+      fields: [
+        {
+          name: 'name',
+          type: 'text',
+          required: true,
+        },
+
+        {
+          name: 'phone',
+          type: 'text',
+          required: false,
+        },
+        {
+          name: 'whatsapp',
+          type: 'text',
+          required: false,
+        },
+      ],
+    },
   ],
 }
 

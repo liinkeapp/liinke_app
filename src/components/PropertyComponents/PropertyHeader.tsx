@@ -1,156 +1,391 @@
-// components/property/PropertyHeader.tsx
-import React from 'react'
-import { ImageCarousel } from './ImageCarousel'
+'use client'
+import React, { useState, useRef, useEffect } from 'react'
+import Image from 'next/image'
+import {
+  ChevronLeft,
+  ChevronRight,
+  ZoomIn,
+  X,
+  Phone,
+  Zap,
+  MapPin,
+  Bed,
+  Bath,
+  Home,
+} from 'lucide-react'
 import { Listings } from '@/types/property'
 
 interface PropertyHeaderProps {
-  post: Listings
-  formatPrice: (price: number) => string
+  post: Listings & {
+    contactinfo?: {
+      phone?: string
+    }
+  }
 }
 
-export function PropertyHeader({ post, formatPrice }: PropertyHeaderProps) {
-  console.log('PropertyHeader post:', post)
+export function PropertyHeader({ post }: PropertyHeaderProps) {
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [showModal, setShowModal] = useState(false)
+  const [thumbnailScrollPosition, setThumbnailScrollPosition] = useState(0)
+  const thumbnailContainerRef = useRef<HTMLDivElement>(null)
+
+  const images = post.images || []
+  const hasImages = images.length > 0
+
+  const nextImage = () => {
+    setCurrentIndex((prev) => (prev + 1) % images.length)
+  }
+
+  const prevImage = () => {
+    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length)
+  }
+
+  const scrollThumbnails = (direction: 'left' | 'right') => {
+    if (!thumbnailContainerRef.current) return
+
+    const container = thumbnailContainerRef.current
+    const scrollAmount = 200
+    const newPosition =
+      direction === 'left'
+        ? Math.max(0, thumbnailScrollPosition - scrollAmount)
+        : Math.min(
+            container.scrollWidth - container.clientWidth,
+            thumbnailScrollPosition + scrollAmount,
+          )
+
+    container.scrollTo({ left: newPosition, behavior: 'smooth' })
+    setThumbnailScrollPosition(newPosition)
+  }
+
+  const canScrollLeft = thumbnailScrollPosition > 0
+  const canScrollRight = thumbnailContainerRef.current
+    ? thumbnailScrollPosition <
+      thumbnailContainerRef.current.scrollWidth - thumbnailContainerRef.current.clientWidth
+    : false
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (thumbnailContainerRef.current) {
+        setThumbnailScrollPosition(thumbnailContainerRef.current.scrollLeft)
+      }
+    }
+
+    const container = thumbnailContainerRef.current
+    if (container) {
+      container.addEventListener('scroll', handleScroll)
+      return () => container.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
+
   return (
-    <div className="bg-white rounded-2xl shadow-lg border border-[#32620e]/10 overflow-hidden mb-8">
-      {/* Hero Image Carousel */}
-      <div className="relative">
-        <ImageCarousel images={post.images || []} title={post.title} />
-
-        {/* Floating Tags */}
-        <div className="absolute top-4 left-4 flex gap-2">
-          <span className="bg-[#32620e] text-white px-3 py-1.5 rounded-lg text-xs cap font-medium shadow-md backdrop-blur-sm capitalize">
-            {post.category}
-          </span>
-          <span className="bg-[#c1440e] text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-md backdrop-blur-sm">
-            {typeof post.price === 'number' ? formatPrice(post.price) : 'Price on Request'}
-          </span>
-        </div>
-      </div>
-
-      {/* Property Content */}
-      <div className="p-6">
-        <div className="max-w-4xl">
-          {/* Title and Location */}
-          <div className="mb-6">
-            <h1 className="text-2xl md:text-3xl font-bold text-[#32620e] mb-3 leading-tight">
-              {post.title}
-            </h1>
-
-            {/* Location */}
-            <div className="flex items-center gap-2 text-[#32620e]/70">
-              <div className="p-1.5 bg-[#32620e]/10 rounded-lg">
-                <svg className="w-4 h-4 text-[#32620e]" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fillRule="evenodd"
-                    d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-                    clipRule="evenodd"
+    <>
+      <div className="bg-white rounded-2xl shadow-xl border border-[#32620e]/10 overflow-hidden mb-8">
+        {/* Enhanced Hero Section with Carousel and Thumbnails */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-0">
+          {/* Main Carousel Area */}
+          <div className="lg:col-span-2 relative">
+            <div className="relative h-64 md:h-96 lg:h-[500px] group">
+              {hasImages ? (
+                <>
+                  <Image
+                    src={images[currentIndex]?.url || '/placeholder-property.jpg'}
+                    alt={`${post.title} - Image ${currentIndex + 1}`}
+                    fill
+                    className="object-cover transition-all duration-500 cursor-pointer hover:scale-105"
+                    onClick={() => setShowModal(true)}
+                    priority
                   />
-                </svg>
-              </div>
-              <span className="text-sm font-medium">
-                {post.location?.address || 'Location not specified'}
-              </span>
+
+                  {/* Enhanced Floating Tags with Glass Effect */}
+                  <div className="absolute top-4 left-4 flex gap-3 z-10">
+                    <span className="bg-[#32620e]/90 backdrop-blur-md text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg ring-1 ring-white/20 capitalize flex items-center gap-2">
+                      <Home size={14} />
+                      {post.category}
+                    </span>
+                    <span className="bg-[#c1440e]/90 backdrop-blur-md text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg ring-1 ring-white/20 flex items-center gap-1">
+                      Ksh {post.price?.toLocaleString()}
+                    </span>
+                  </div>
+
+                  {/* Enhanced Expand Icon */}
+                  <button
+                    onClick={() => setShowModal(true)}
+                    className="absolute top-4 right-4 bg-black/40 backdrop-blur-md hover:bg-black/60 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 hover:scale-110 ring-1 ring-white/20"
+                    aria-label="View full size"
+                  >
+                    <ZoomIn size={18} />
+                  </button>
+
+                  {/* Enhanced Navigation Arrows */}
+                  {images.length > 1 && (
+                    <>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          prevImage()
+                        }}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/40 backdrop-blur-md hover:bg-black/60 text-white p-4 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 hover:scale-110 ring-1 ring-white/20"
+                        aria-label="Previous image"
+                      >
+                        <ChevronLeft size={20} />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          nextImage()
+                        }}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/40 backdrop-blur-md hover:bg-black/60 text-white p-4 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 hover:scale-110 ring-1 ring-white/20"
+                        aria-label="Next image"
+                      >
+                        <ChevronRight size={20} />
+                      </button>
+                    </>
+                  )}
+
+                  {/* Enhanced Image Counter */}
+                  {images.length > 1 && (
+                    <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-md text-white px-4 py-2 rounded-full text-sm font-medium ring-1 ring-white/20">
+                      {currentIndex + 1} / {images.length}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                  <div className="text-center">
+                    <Home size={48} className="text-gray-400 mx-auto mb-3" />
+                    <span className="text-gray-500 text-lg font-medium">No images available</span>
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
 
-          {/* Key Features - Compact Grid */}
-          {(post.bedrooms !== undefined || post.bathrooms !== undefined || post.status) && (
-            <div className="grid grid-cols-3 gap-3">
-              <div className="bg-gradient-to-br from-[#32620e]/5 to-[#32620e]/10 rounded-xl p-4 text-center border border-[#32620e]/10">
-                <div className="w-8 h-8 mx-auto mb-2 bg-[#32620e]/10 rounded-lg flex items-center justify-center">
-                  <svg className="w-4 h-4 text-[#32620e]" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14zM19 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                </div>
-                <div className="text-[#32620e] font-semibold text-sm">
-                  {post.bedrooms} Bed{post.bedrooms !== 1 ? 's' : ''}
-                </div>
-              </div>
+            {/* Enhanced Scrollable Thumbnail Strip */}
+            {hasImages && images.length > 1 && (
+              <div className="p-6 border-t border-[#32620e]/10 bg-gradient-to-r from-[#32620e]/[0.02] to-transparent">
+                <div className="relative">
+                  {/* Left Scroll Button */}
+                  {canScrollLeft && (
+                    <button
+                      onClick={() => scrollThumbnails('left')}
+                      className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm hover:bg-white text-[#32620e] p-2 rounded-full shadow-lg border border-[#32620e]/20 hover:border-[#32620e]/40 transition-all duration-200 hover:scale-110"
+                      aria-label="Scroll thumbnails left"
+                    >
+                      <ChevronLeft size={16} />
+                    </button>
+                  )}
 
-              <div className="bg-gradient-to-br from-[#32620e]/5 to-[#32620e]/10 rounded-xl p-4 text-center border border-[#32620e]/10">
-                <div className="w-8 h-8 mx-auto mb-2 bg-[#32620e]/10 rounded-lg flex items-center justify-center">
-                  <svg className="w-4 h-4 text-[#32620e]" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fillRule="evenodd"
-                      d="M2 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 002 2H4a2 2 0 01-2-2V5zm3 1h6v4H5V6zm6 6H5v2h6v-2z"
-                    />
-                    <path d="M15 7h1a2 2 0 012 2v5.5a1.5 1.5 0 01-3 0V7z" />
-                  </svg>
-                </div>
-                <div className="text-[#32620e] font-semibold text-sm">
-                  {post.bathrooms} Bath{post.bathrooms !== 1 ? 's' : ''}
-                </div>
-              </div>
+                  {/* Thumbnail Container */}
+                  <div
+                    ref={thumbnailContainerRef}
+                    className="flex gap-3 overflow-x-auto scrollbar-hide scroll-smooth px-8 py-2"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                  >
+                    {images.map((image, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setCurrentIndex(index)}
+                        className={`flex-shrink-0 relative w-20 h-16 md:w-24 md:h-20 rounded-xl overflow-hidden border-3 transition-all duration-300 hover:scale-105 ${
+                          index === currentIndex
+                            ? 'border-[#32620e] ring-4 ring-[#32620e]/20 scale-110 shadow-lg'
+                            : 'border-[#32620e]/20 hover:border-[#32620e]/50 shadow-md hover:shadow-lg'
+                        }`}
+                      >
+                        <Image
+                          src={image.url}
+                          alt={`Thumbnail ${index + 1}`}
+                          width={100}
+                          height={100}
+                          className="object-cover transition-all duration-300"
+                        />
+                        {index === currentIndex && (
+                          <div className="absolute inset-0 bg-[#32620e]/20 backdrop-blur-[1px]" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
 
-              <div className="bg-gradient-to-br from-[#32620e]/5 to-[#32620e]/10 rounded-xl p-4 text-center border border-[#32620e]/10">
-                <div className="w-8 h-8 mx-auto mb-2 bg-[#32620e]/10 rounded-lg flex items-center justify-center">
-                  {post.status === 'available' ? (
-                    <svg className="w-4 h-4 text-[#32620e]" fill="currentColor" viewBox="0 0 20 20">
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      />
-                    </svg>
-                  ) : (
-                    <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path
-                        fillRule="evenodd"
-                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                      />
-                    </svg>
+                  {/* Right Scroll Button */}
+                  {canScrollRight && (
+                    <button
+                      onClick={() => scrollThumbnails('right')}
+                      className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm hover:bg-white text-[#32620e] p-2 rounded-full shadow-lg border border-[#32620e]/20 hover:border-[#32620e]/40 transition-all duration-200 hover:scale-110"
+                      aria-label="Scroll thumbnails right"
+                    >
+                      <ChevronRight size={16} />
+                    </button>
                   )}
                 </div>
-                <div
-                  className={`font-semibold text-sm ${post.status === 'available' ? 'text-[#32620e]' : 'text-red-500'}`}
-                >
-                  {post.status === 'available' ? 'Available' : 'Unavailable'}
+              </div>
+            )}
+          </div>
+
+          {/* Enhanced Contact Info and Property Details Sidebar */}
+          <div className="lg:border-l border-[#32620e]/10 bg-gradient-to-br from-[#32620e]/[0.03] via-white to-[#c1440e]/[0.02] p-6">
+            {/* Contact Section */}
+            <div className="mb-8">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-3 bg-gradient-to-br from-[#32620e]/10 to-[#32620e]/20 rounded-xl shadow-sm">
+                  <Zap className="w-5 h-5 text-[#32620e]" />
                 </div>
+                <h3 className="font-bold text-[#32620e] text-lg">Contact Agent</h3>
+              </div>
+
+              {post.contactinfo?.phone && (
+                <a
+                  href={`tel:${post.contactinfo.phone}`}
+                  className="flex items-center gap-4 p-5 rounded-2xl border-2 border-[#32620e]/20 hover:border-[#32620e] hover:bg-gradient-to-r hover:from-[#32620e]/5 hover:to-[#32620e]/10 transition-all duration-300 group w-full shadow-sm hover:shadow-lg hover:scale-[1.02]"
+                >
+                  <div className="p-4 bg-gradient-to-br from-[#32620e]/10 to-[#32620e]/20 rounded-2xl group-hover:from-[#32620e]/20 group-hover:to-[#32620e]/30 transition-all duration-300 shadow-sm">
+                    <Phone className="w-5 h-5 text-[#32620e]" />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <span className="text-[#32620e] font-bold block text-lg">Call Now</span>
+                    <p className="text-[#32620e]/70 text-sm font-medium">
+                      {post.contactinfo.phone}
+                    </p>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-[#32620e]/40 group-hover:text-[#32620e] group-hover:translate-x-1 transition-all duration-300" />
+                </a>
+              )}
+            </div>
+
+            {/* Enhanced Quick Property Stats */}
+            <div className="space-y-4">
+              <h4 className="font-bold text-[#32620e] mb-4 text-lg flex items-center gap-2">
+                <div className="w-1 h-6 bg-gradient-to-b from-[#32620e] to-[#c1440e] rounded-full" />
+                Property Details
+              </h4>
+
+              <div className="space-y-4">
+                <div className="flex justify-between items-center py-3 border-b border-[#32620e]/10 hover:bg-[#32620e]/5 px-3 -mx-3 rounded-lg transition-all duration-200">
+                  <span className="text-[#32620e]/70 text-sm font-semibold">Price</span>
+                  <span className="text-[#c1440e] font-bold text-lg">
+                    Ksh. {post.price?.toLocaleString()}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center py-3 border-b border-[#32620e]/10 hover:bg-[#32620e]/5 px-3 -mx-3 rounded-lg transition-all duration-200">
+                  <span className="text-[#32620e]/70 text-sm font-semibold">Status</span>
+                  <span
+                    className={`font-bold px-3 py-2 rounded-full text-xs shadow-sm ${
+                      post.status === 'available'
+                        ? 'bg-gradient-to-r from-green-100 to-green-50 text-green-800 border border-green-200'
+                        : 'bg-gradient-to-r from-red-100 to-red-50 text-red-800 border border-red-200'
+                    }`}
+                  >
+                    {post.status === 'available' ? 'Available' : 'Unavailable'}
+                  </span>
+                </div>
+
+                {post.bedrooms !== undefined && (
+                  <div className="flex justify-between items-center py-3 border-b border-[#32620e]/10 hover:bg-[#32620e]/5 px-3 -mx-3 rounded-lg transition-all duration-200">
+                    <span className="text-[#32620e]/70 text-sm font-semibold flex items-center gap-2">
+                      <Bed size={14} />
+                      Bedrooms
+                    </span>
+                    <span className="text-[#32620e] font-bold">{post.bedrooms}</span>
+                  </div>
+                )}
+
+                {post.bathrooms !== undefined && (
+                  <div className="flex justify-between items-center py-3 border-b border-[#32620e]/10 hover:bg-[#32620e]/5 px-3 -mx-3 rounded-lg transition-all duration-200">
+                    <span className="text-[#32620e]/70 text-sm font-semibold flex items-center gap-2">
+                      <Bath size={14} />
+                      Bathrooms
+                    </span>
+                    <span className="text-[#32620e] font-bold">{post.bathrooms}</span>
+                  </div>
+                )}
               </div>
             </div>
-          )}
+          </div>
+        </div>
 
-          {/* Additional Property Details Row */}
-          <div className="mt-4 pt-4 border-t border-[#32620e]/10">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-              <div>
-                <div className="text-xs text-[#32620e]/60 uppercase tracking-wide font-medium mb-1">
-                  Type
-                </div>
-                <div className="text-sm font-semibold text-[#32620e]">
-                  {typeof post.category ? post.category : 'Property'}
-                </div>
-              </div>
+        {/* Enhanced Main Property Info */}
+        <div className="p-8 border-t border-[#32620e]/10 bg-gradient-to-r from-[#32620e]/[0.01] to-transparent">
+          <div className="max-w-4xl">
+            {/* Title and Location */}
+            <div className="mb-6">
+              <h1 className="text-3xl md:text-4xl font-bold text-[#32620e] mb-4 leading-tight bg-gradient-to-r from-[#32620e] to-[#32620e]/80 bg-clip-text">
+                {post.title}
+              </h1>
 
-              <div>
-                <div className="text-xs text-[#32620e]/60 uppercase tracking-wide font-medium mb-1">
-                  Price
+              {/* Enhanced Location */}
+              <div className="flex items-center gap-3 text-[#32620e]/70 hover:text-[#32620e] transition-colors duration-200 cursor-pointer group">
+                <div className="p-2 bg-gradient-to-br from-[#32620e]/10 to-[#32620e]/20 rounded-xl shadow-sm group-hover:shadow-md transition-all duration-200">
+                  <MapPin className="w-5 h-5 text-[#32620e]" />
                 </div>
-                <div className="text-sm font-semibold text-[#c1440e]">
-                  {typeof post.price === 'number' ? formatPrice(post.price) : 'On Request'}
-                </div>
-              </div>
-
-              <div>
-                <div className="text-xs text-[#32620e]/60 uppercase tracking-wide font-medium mb-1">
-                  Status
-                </div>
-                <div
-                  className={`text-sm font-semibold ${post.status === 'available' ? 'text-green-600' : 'text-red-500'}`}
-                >
-                  {post.status === 'available' ? 'Available' : 'Unavailable'}
-                </div>
-              </div>
-
-              <div>
-                <div className="text-xs text-[#32620e]/60 uppercase tracking-wide font-medium mb-1">
-                  ID
-                </div>
-                <div className="text-sm font-semibold text-[#32620e]/80">#{post.id || 'N/A'}</div>
+                <span className="text-base font-semibold group-hover:underline">
+                  {post.location?.address || 'Location not specified'}
+                </span>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Enhanced Full Size Modal */}
+      {showModal && hasImages && (
+        <div
+          className="fixed inset-0 bg-black/95 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => setShowModal(false)}
+        >
+          <div className="relative max-w-6xl max-h-full w-full h-full flex items-center justify-center">
+            {/* Enhanced Close Button */}
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-6 right-6 bg-black/60 backdrop-blur-md hover:bg-black/80 text-white p-4 rounded-full z-10 transition-all duration-200 hover:scale-110 ring-1 ring-white/20"
+              aria-label="Close modal"
+            >
+              <X size={24} />
+            </button>
+
+            {/* Modal Image */}
+            <div className="relative w-full h-full max-h-[85vh] rounded-2xl overflow-hidden shadow-2xl">
+              <Image
+                src={images[currentIndex]?.url || '/placeholder-property.jpg'}
+                alt={`${post.title} - Image ${currentIndex + 1}`}
+                fill
+                className="object-contain"
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
+
+            {/* Enhanced Modal Navigation */}
+            {images.length > 1 && (
+              <>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    prevImage()
+                  }}
+                  className="absolute left-6 top-1/2 -translate-y-1/2 bg-black/60 backdrop-blur-md hover:bg-black/80 text-white p-4 rounded-full transition-all duration-200 hover:scale-110 ring-1 ring-white/20"
+                  aria-label="Previous image"
+                >
+                  <ChevronLeft size={24} />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    nextImage()
+                  }}
+                  className="absolute right-6 top-1/2 -translate-y-1/2 bg-black/60 backdrop-blur-md hover:bg-black/80 text-white p-4 rounded-full transition-all duration-200 hover:scale-110 ring-1 ring-white/20"
+                  aria-label="Next image"
+                >
+                  <ChevronRight size={24} />
+                </button>
+              </>
+            )}
+
+            {/* Enhanced Modal Counter */}
+            {images.length > 1 && (
+              <div className="absolute top-8 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-md text-white px-6 py-3 rounded-full text-base font-semibold ring-1 ring-white/20">
+                {currentIndex + 1} / {images.length}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </>
   )
 }

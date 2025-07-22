@@ -51,7 +51,7 @@ export default function Welcome() {
     },
     {
       label: 'Rentals',
-      href: '/rental',
+      href: '/rentals',
       icon: '🏠',
       description: 'Homes and apartments for rent',
       code: 'RNT-001',

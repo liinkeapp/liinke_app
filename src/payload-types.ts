@@ -193,6 +193,11 @@ export interface Property {
       }[]
     | null;
   publishedAt?: string | null;
+  contactinfo: {
+    name: string;
+    phone?: string | null;
+    whatsapp?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -525,6 +530,13 @@ export interface PropertiesSelect<T extends boolean = true> {
         id?: T;
       };
   publishedAt?: T;
+  contactinfo?:
+    | T
+    | {
+        name?: T;
+        phone?: T;
+        whatsapp?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }

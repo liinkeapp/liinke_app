@@ -12,9 +12,7 @@ import { Listings } from '@/types/property'
 import { PropertyHeader } from '@/components/PropertyComponents/PropertyHeader'
 import { PropertyDescription } from '@/components/PropertyComponents/PropertyDescription'
 import { PropertyFeatures } from '@/components/PropertyComponents/PropertyFeatures'
-import { ImageGallery } from '@/components/PropertyComponents/ImageGallery'
 import { RelatedProperties } from '@/components/PropertyComponents/RelatedProperties'
-import { ContactForm } from '@/components/PropertyComponents/ContactForm'
 import { Breadcrumb } from '@/components/PropertyComponents/Breadcrumb'
 
 export default async function PropertyPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -64,9 +62,9 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
       <div className="container mx-auto px-6 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-2">
           {/* Main Content */}
-          <div className="lg:col-span-3 space-y-8">
+          <div className="lg:col-span-4 space-y-8">
             {/* Property Header with Carousel */}
-            <PropertyHeader post={post as Listings} formatPrice={formatPrice} />
+            <PropertyHeader post={post as Listings} />
 
             {/* Property Description */}
             <PropertyDescription description={post.description} />
@@ -85,30 +83,12 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
               }
             />
 
-            {/* Image Gallery */}
-            <ImageGallery
-              images={
-                Array.isArray(post.images)
-                  ? post.images
-                      .filter((img) => !!img && typeof (img as any).url === 'string')
-                      .map((img) => ({ url: (img as any).url }))
-                  : []
-              }
-              title={post.title}
-            />
-
             {/* Related Properties */}
             <RelatedProperties
               relatedPosts={relatedPosts}
               categorySlug={categorySlug}
               formatPrice={formatPrice}
             />
-          </div>
-
-          {/* Sidebar */}
-          <div className="lg:col-span-1 space-y-8">
-            {/* Contact Form */}
-            <ContactForm propertyTitle={post.title} />
           </div>
         </div>
       </div>

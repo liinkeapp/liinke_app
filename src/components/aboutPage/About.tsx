@@ -1,19 +1,12 @@
 'use client'
 import React, { useState, useEffect } from 'react'
+import FloatingDots from '../contactPage/FloatingDots'
 
 export default function About() {
   const [isLoaded, setIsLoaded] = useState(false)
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
 
   useEffect(() => {
     setIsLoaded(true)
-
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
-    }
-
-    window.addEventListener('mousemove', handleMouseMove)
-    return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [])
 
   const features = [
@@ -94,19 +87,7 @@ export default function About() {
         />
 
         {/* Floating orbs with mouse parallax */}
-        {[...Array(8)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-3 h-3 bg-gradient-to-r from-[#32620e]/60 to-[#c1440e]/60 rounded-full animate-float"
-            style={{
-              top: `${20 + Math.random() * 60}%`,
-              left: `${10 + Math.random() * 80}%`,
-              transform: `translate(${(mousePosition.x - (typeof window !== 'undefined' ? window.innerWidth : 0) / 2) * (0.01 + i * 0.002)}px, ${(mousePosition.y - (typeof window !== 'undefined' ? window.innerHeight : 0) / 2) * (0.01 + i * 0.002)}px)`,
-              animationDelay: `${i * 0.3}s`,
-              animationDuration: `${3 + Math.random() * 2}s`,
-            }}
-          />
-        ))}
+        <FloatingDots />
 
         {/* Scanning line effect */}
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#c1440e]/60 to-transparent animate-scan"></div>

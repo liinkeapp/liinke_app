@@ -67,10 +67,10 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/properties"
+                  href="/map"
                   className="text-[#f9f5f0]/80 hover:text-[#c1440e] text-sm transition-colors duration-200"
                 >
-                  Properties
+                  Map
                 </Link>
               </li>
 
@@ -115,7 +115,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/property-management"
+                  href="#"
                   className="text-[#f9f5f0]/80 hover:text-[#c1440e] text-sm transition-colors duration-200"
                 >
                   Movers
@@ -123,7 +123,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/valuation"
+                  href="#"
                   className="text-[#f9f5f0]/80 hover:text-[#c1440e] text-sm transition-colors duration-200"
                 >
                   Property Valuation
@@ -140,9 +140,9 @@ const Footer = () => {
                 <FiMapPin className="h-5 w-5 text-[#c1440e] mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="text-[#f9f5f0]/80 text-sm">
-                    123 Real Estate Ave
+                    We Are
                     <br />
-                    Nairobi, Kenya
+                    Everywhere
                   </p>
                 </div>
               </div>
