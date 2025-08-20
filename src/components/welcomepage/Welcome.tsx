@@ -107,53 +107,6 @@ export default function Welcome() {
         />
       </div>
 
-      {/* Floating geometric elements */}
-      <div className="absolute inset-0 opacity-20">
-        {/* Hexagonal elements */}
-        <div
-          className="absolute top-20 left-16 w-24 h-24 border-2 border-[#32620e]/40 transform rotate-12 animate-spin"
-          style={{
-            animationDuration: '20s',
-            clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
-          }}
-        >
-          <div
-            className="absolute inset-2 border border-[#32620e]/20 transform -rotate-12"
-            style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}
-          ></div>
-        </div>
-
-        <div
-          className="absolute top-32 right-20 w-20 h-20 border-2 border-[#c1440e]/50 transform -rotate-45 animate-spin"
-          style={{ animationDuration: '15s', animationDirection: 'reverse' }}
-        >
-          <div className="absolute inset-1 bg-[#c1440e]/10 transform rotate-45"></div>
-        </div>
-
-        <div className="absolute bottom-32 left-1/4 w-16 h-16 border-2 border-[#32620e]/60 transform rotate-45 animate-pulse">
-          <div className="absolute inset-2 border border-[#32620e]/30 transform -rotate-45"></div>
-          <div className="absolute top-1/2 left-1/2 w-2 h-2 bg-[#32620e]/60 transform -translate-x-1/2 -translate-y-1/2 rotate-45"></div>
-        </div>
-
-        {/* Floating orbs with mouse parallax */}
-        {[...Array(6)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-3 h-3 bg-gradient-to-r from-[#32620e]/60 to-[#c1440e]/60 rounded-full animate-float"
-            style={{
-              top: `${20 + Math.random() * 60}%`,
-              left: `${10 + Math.random() * 80}%`,
-              transform: `translate(${(mousePosition.x - windowSize.width / 2) * (0.01 + i * 0.002)}px, ${(mousePosition.y - windowSize.height / 2) * (0.01 + i * 0.002)}px)`,
-              animationDelay: `${i * 0.5}s`,
-              animationDuration: `${3 + Math.random() * 2}s`,
-            }}
-          />
-        ))}
-
-        {/* Scanning line effect */}
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#c1440e]/60 to-transparent animate-scan"></div>
-      </div>
-
       <div
         className={`max-w-7xl w-full mx-auto text-center relative z-10 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
       >
