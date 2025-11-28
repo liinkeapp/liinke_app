@@ -94,7 +94,7 @@ const Navbar = () => {
                 href={link.href}
                 className={`group relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 ${
                   link.special
-                    ? 'text-[#c1440e] hover:text-white hover:bg-[#c1440e] hover:shadow-lg bg-gradient-to-r from-[#c1440e]/10 to-[#32620e]/10 border border-[#c1440e]/30'
+                    ? 'text-[#c1440e] hover:text-white hover:bg-[#c1440e] hover:shadow-xl bg-gradient-to-r from-[#c1440e]/10 to-[#32620e]/10 border border-[#c1440e]/30'
                     : 'text-[#32620e] hover:text-[#c1440e] hover:bg-[#32620e]/5'
                 }`}
                 style={{
