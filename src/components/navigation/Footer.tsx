@@ -79,7 +79,7 @@ const Footer = () => {
                   href="/about-liinke"
                   className="text-[#f9f5f0]/80 hover:text-[#c1440e] text-sm transition-colors duration-200"
                 >
-                  About
+                  About Us
                 </Link>
               </li>
               <li>
