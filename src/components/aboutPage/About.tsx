@@ -143,7 +143,7 @@ export default function About() {
               </div>
 
               <h3 className="text-2xl md:text-3xl font-semibold text-[#32620e] mb-8 tracking-wide">
-                Mapping Every Property, Connecting Every Dream
+                Mapping Every Property, Connecting Every Dream.
               </h3>
 
               <div className="space-y-2 text-[#32620e]/80 text-lg md:text-lg font-light leading-relaxed font-mono">
